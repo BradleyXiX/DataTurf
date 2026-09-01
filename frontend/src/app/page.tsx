@@ -8,20 +8,11 @@ import { PerformanceChart } from '@/components/PerformanceChart';
 // Mock Data
 
 
-const MOCK_CHART_DATA = [
-  { match: 'M1', points: 3 },
-  { match: 'M2', points: 6 },
-  { match: 'M3', points: 7 },
-  { match: 'M4', points: 10 },
-  { match: 'M5', points: 13 },
-  { match: 'M6', points: 13 },
-  { match: 'M7', points: 16 },
-];
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'football' | 'golf'>('football');
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   // Fetch real data from the backend
   useEffect(() => {
@@ -36,9 +27,17 @@ export default function Home() {
         if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
         setTableData(data);
+
+        // Fetch chart data
+        const chartRes = await fetch(`http://localhost:5000/api/performance/${activeTab}`);
+        if (!chartRes.ok) throw new Error('Network response for chart was not ok');
+        const cData = await chartRes.json();
+        setChartData(cData);
+
       } catch (error) {
         console.error("Failed to fetch data:", error);
         setTableData([]);
+        setChartData([]);
       } finally {
         setIsLoading(false);
       }
@@ -145,7 +144,7 @@ export default function Home() {
           <h2 className="text-2xl font-semibold">Performance Trend</h2>
           <div className="hover-lift">
             <PerformanceChart 
-              data={MOCK_CHART_DATA} 
+              data={chartData} 
               dataKey="points" 
               xAxisKey="match" 
               isLoading={isLoading}

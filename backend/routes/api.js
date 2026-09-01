@@ -22,4 +22,36 @@ router.get('/leaderboard/golf/pga', async (req, res) => {
   }
 });
 
+router.get('/performance/:domain', async (req, res) => {
+  const { domain } = req.params;
+  try {
+    if (domain === 'football') {
+      // Return mock historical chart data for football (would query matches table in real implementation)
+      const data = [
+        { match: 'M1', points: 3 },
+        { match: 'M2', points: 6 },
+        { match: 'M3', points: 7 },
+        { match: 'M4', points: 10 },
+        { match: 'M5', points: 13 },
+        { match: 'M6', points: 13 },
+        { match: 'M7', points: 16 },
+      ];
+      return res.json(data);
+    } else if (domain === 'golf') {
+      // Return mock historical chart data for golf
+      const data = [
+        { match: 'R1', points: -2 },
+        { match: 'R2', points: -4 },
+        { match: 'R3', points: -6 },
+        { match: 'R4', points: -8 },
+      ];
+      return res.json(data);
+    }
+    return res.status(400).json({ error: 'Invalid domain' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;
