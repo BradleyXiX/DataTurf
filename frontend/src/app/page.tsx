@@ -6,18 +6,7 @@ import { DataTable } from '@/components/DataTable';
 import { PerformanceChart } from '@/components/PerformanceChart';
 
 // Mock Data
-const MOCK_FOOTBALL = [
-  { id: 1, team_name: 'Manchester United U18', matches_played: 20, wins: 16, draws: 2, losses: 2, points: 50 },
-  { id: 2, team_name: 'Manchester City U18', matches_played: 20, wins: 15, draws: 3, losses: 2, points: 48 },
-  { id: 3, team_name: 'Liverpool U18', matches_played: 20, wins: 12, draws: 4, losses: 4, points: 40 },
-  { id: 4, team_name: 'Arsenal U18', matches_played: 20, wins: 11, draws: 5, losses: 4, points: 38 },
-];
 
-const MOCK_GOLF = [
-  { id: 1, player_name: 'Scottie Scheffler', position: 1, total_score: -11, rounds_played: 4 },
-  { id: 2, player_name: 'Rory McIlroy', position: 2, total_score: -8, rounds_played: 4 },
-  { id: 3, player_name: 'Jon Rahm', position: 3, total_score: -7, rounds_played: 4 },
-];
 
 const MOCK_CHART_DATA = [
   { match: 'M1', points: 3 },
@@ -32,14 +21,30 @@ const MOCK_CHART_DATA = [
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'football' | 'golf'>('football');
   const [isLoading, setIsLoading] = useState(true);
+  const [tableData, setTableData] = useState<any[]>([]);
 
-  // Simulate data fetching
+  // Fetch real data from the backend
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const endpoint = activeTab === 'football' 
+          ? 'http://localhost:5000/api/standings/football/u18'
+          : 'http://localhost:5000/api/leaderboard/golf/pga';
+          
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        setTableData(data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        setTableData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, [activeTab]);
 
   const footballColumns = [
@@ -57,6 +62,15 @@ export default function Home() {
     { key: 'total_score', label: 'Score', align: 'center' as const },
     { key: 'rounds_played', label: 'Thru', align: 'center' as const },
   ];
+
+  // Dynamic stats calculation
+  const topPerformer = tableData.length > 0 ? (activeTab === 'football' ? tableData[0].team_name : tableData[0].player_name) : 'N/A';
+  
+  const avgStat = tableData.length > 0 ? (
+    activeTab === 'football' 
+      ? (tableData.reduce((acc, row) => acc + (row.points || 0), 0) / tableData.length).toFixed(1)
+      : (tableData.reduce((acc, row) => acc + (row.total_score || 0), 0) / tableData.length).toFixed(1)
+  ) : '0';
 
   return (
     <div className="min-h-screen p-8 sm:p-12 md:p-20 max-w-6xl mx-auto space-y-12 animate-fade-in">
@@ -120,7 +134,7 @@ export default function Home() {
           <div className="hover-lift">
             <DataTable 
               columns={activeTab === 'football' ? footballColumns : golfColumns}
-              data={activeTab === 'football' ? MOCK_FOOTBALL : MOCK_GOLF}
+              data={tableData}
               isLoading={isLoading}
             />
           </div>
@@ -144,15 +158,15 @@ export default function Home() {
              <div className="glass-card p-5 hover-lift">
                 <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Top Performer</div>
                 <div className="text-lg font-bold text-white truncate">
-                  {activeTab === 'football' ? 'Man Utd U18' : 'S. Scheffler'}
+                  {!isLoading ? topPerformer : '...'}
                 </div>
              </div>
              <div className="glass-card p-5 hover-lift">
                 <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
-                  {activeTab === 'football' ? 'Avg Goals' : 'Avg Score'}
+                  {activeTab === 'football' ? 'Avg Points' : 'Avg Score'}
                 </div>
                 <div className="text-2xl font-bold text-white">
-                  {activeTab === 'football' ? '2.8' : '-2.4'}
+                  {!isLoading ? avgStat : '...'}
                 </div>
              </div>
           </div>
