@@ -42,3 +42,12 @@ VALUES
 ('The Masters', 'Scottie Scheffler', 1, -11, 4),
 ('The Masters', 'Rory McIlroy', 2, -8, 4),
 ('The Masters', 'Jon Rahm', 3, -7, 4);
+
+-- Mock Data for Football Matches
+INSERT INTO u18_football_matches (match_date, home_team, away_team, home_score, away_score)
+VALUES
+('2024-01-01', 'Manchester United U18', 'Mock Opponent', 2, 1),
+('2024-01-08', 'Manchester United U18', 'Mock Opponent 2', 3, 0),
+('2024-01-15', 'Manchester United U18', 'Mock Opponent 3', 1, 1),
+('2024-01-22', 'Mock Opponent 4', 'Manchester United U18', 0, 2),
+('2024-01-29', 'Mock Opponent 5', 'Manchester United U18', 1, 3);

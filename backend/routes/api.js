@@ -26,16 +26,30 @@ router.get('/performance/:domain', async (req, res) => {
   const { domain } = req.params;
   try {
     if (domain === 'football') {
-      // Return mock historical chart data for football (would query matches table in real implementation)
-      const data = [
-        { match: 'M1', points: 3 },
-        { match: 'M2', points: 6 },
-        { match: 'M3', points: 7 },
-        { match: 'M4', points: 10 },
-        { match: 'M5', points: 13 },
-        { match: 'M6', points: 13 },
-        { match: 'M7', points: 16 },
-      ];
+      const { rows } = await db.query(`
+        SELECT match_date, home_team, away_team, home_score, away_score 
+        FROM u18_football_matches 
+        WHERE home_team = 'Manchester United U18' OR away_team = 'Manchester United U18'
+        ORDER BY match_date ASC
+      `);
+      
+      let cumulativePoints = 0;
+      const data = rows.map((row, index) => {
+        let matchPoints = 0;
+        if (row.home_team === 'Manchester United U18') {
+          if (row.home_score > row.away_score) matchPoints = 3;
+          else if (row.home_score === row.away_score) matchPoints = 1;
+        } else {
+          if (row.away_score > row.home_score) matchPoints = 3;
+          else if (row.away_score === row.home_score) matchPoints = 1;
+        }
+        cumulativePoints += matchPoints;
+        
+        return {
+          match: `M${index + 1}`,
+          points: cumulativePoints
+        };
+      });
       return res.json(data);
     } else if (domain === 'golf') {
       // Return mock historical chart data for golf
