@@ -28,5 +28,5 @@ RUN playwright install chromium
 
 COPY . .
 
-# Default command can be overridden to run specific scrapers
-CMD ["python", "scrape_football.py"]
+# Default command to run the scheduled scrapers
+CMD ["python", "scheduler.py"]
