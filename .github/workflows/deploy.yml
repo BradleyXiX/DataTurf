@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Build, Push, and Deploy
 
 on:
   push:
@@ -6,44 +6,77 @@ on:
       - main
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  AWS_REGION: us-east-1
 
 jobs:
-  build-and-push-images:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Frontend image
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
+          tags: ${{ steps.login-ecr.outputs.registry }}/dataturf-frontend:latest
 
       - name: Build and push Backend image
         uses: docker/build-push-action@v5
         with:
           context: ./backend
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:latest
+          tags: ${{ steps.login-ecr.outputs.registry }}/dataturf-backend:latest
 
       - name: Build and push Data Ingestion image
         uses: docker/build-push-action@v5
         with:
           context: ./data-ingestion
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-data-ingestion:latest
+          tags: ${{ steps.login-ecr.outputs.registry }}/dataturf-data-ingestion:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            mkdir -p ~/dataturf
+            cd ~/dataturf
+            
+            # Create nginx directory
+            mkdir -p nginx
+            
+            # Export environment variables for docker-compose
+            export AWS_ACCOUNT_ID=$(echo ${{ steps.login-ecr.outputs.registry }} | cut -d'.' -f1)
+            export AWS_REGION=${{ env.AWS_REGION }}
+            
+            # We will copy docker-compose.prod.yml and nginx.conf using scp, but since we are using appleboy/ssh-action, 
+            # it's easier to use a separate SCP action. Alternatively, we can pull them from git.
+            # Let's clone or pull the latest repo on the EC2 instance.
+            
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/${{ github.repository }}.git .
+            else
+              git pull origin main
+            fi
+            
+            # Login to ECR on the EC2 instance
+            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+            
+            # Pull latest images and restart
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
