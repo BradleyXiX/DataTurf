@@ -47,6 +47,15 @@ jobs:
           push: true
           tags: ${{ steps.login-ecr.outputs.registry }}/dataturf-data-ingestion:latest
 
+      - name: Copy config files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.prod.yml,nginx/nginx.conf"
+          target: "~/dataturf"
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -54,25 +63,11 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            mkdir -p ~/dataturf
             cd ~/dataturf
-            
-            # Create nginx directory
-            mkdir -p nginx
             
             # Export environment variables for docker-compose
             export AWS_ACCOUNT_ID=$(echo ${{ steps.login-ecr.outputs.registry }} | cut -d'.' -f1)
             export AWS_REGION=${{ env.AWS_REGION }}
-            
-            # We will copy docker-compose.prod.yml and nginx.conf using scp, but since we are using appleboy/ssh-action, 
-            # it's easier to use a separate SCP action. Alternatively, we can pull them from git.
-            # Let's clone or pull the latest repo on the EC2 instance.
-            
-            if [ ! -d ".git" ]; then
-              git clone https://github.com/${{ github.repository }}.git .
-            else
-              git pull origin main
-            fi
             
             # Login to ECR on the EC2 instance
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
