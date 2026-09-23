@@ -63,15 +63,31 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
+
             cd ~/dataturf
-            
-            # Export environment variables for docker-compose
-            export AWS_ACCOUNT_ID=$(echo ${{ steps.login-ecr.outputs.registry }} | cut -d'.' -f1)
-            export AWS_REGION=${{ env.AWS_REGION }}
-            
-            # Login to ECR on the EC2 instance
-            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
-            
-            # Pull latest images and restart
+
+            export AWS_ACCOUNT_ID=$(echo "${{ steps.login-ecr.outputs.registry }}" | cut -d'.' -f1)
+            export AWS_REGION="${{ env.AWS_REGION }}"
+
+            aws ecr get-login-password \
+              --region "$AWS_REGION" |
+              docker login \
+                --username AWS \
+                --password-stdin "${{ steps.login-ecr.outputs.registry }}"
+
+            echo "Disk usage before cleanup:"
+            df -h
+            docker system df || true
+
+            # Remove stopped containers, unused images, and build cache.
+            # This does not remove the named pgdata volume.
+            docker container prune -f
+            docker image prune -af
+            docker builder prune -af
+
             docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
+            echo "Disk usage after deployment:"
+            df -h
