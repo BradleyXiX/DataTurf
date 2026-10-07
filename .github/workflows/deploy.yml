@@ -47,6 +47,15 @@ jobs:
           push: true
           tags: ${{ steps.login-ecr.outputs.registry }}/dataturf-data-ingestion:latest
 
+      - name: Clean up bad directory created by Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            rm -rf ~/dataturf/backend/db/init.sql || true
+
       - name: Copy config files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
