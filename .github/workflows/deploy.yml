@@ -54,6 +54,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            sudo chown -R ubuntu:ubuntu ~/dataturf || true
             sudo rm -rf ~/dataturf/backend/db/init.sql || true
 
       - name: Copy config files to EC2
