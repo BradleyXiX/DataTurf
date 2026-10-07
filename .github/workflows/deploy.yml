@@ -54,7 +54,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            rm -rf ~/dataturf/backend/db/init.sql || true
+            sudo rm -rf ~/dataturf/backend/db/init.sql || true
 
       - name: Copy config files to EC2
         uses: appleboy/scp-action@v0.1.7
