@@ -18,30 +18,40 @@ CREATE TABLE IF NOT EXISTS u18_football_matches (
     away_score INT
 );
 
-CREATE TABLE IF NOT EXISTS pga_leaderboard (
+CREATE TABLE IF NOT EXISTS nba_standings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tournament_name VARCHAR(255) NOT NULL,
-    player_name VARCHAR(255) NOT NULL,
-    position INT,
-    total_score INT,
-    rounds_played INT,
+    team_name VARCHAR(255) UNIQUE NOT NULL,
+    wins INT DEFAULT 0,
+    losses INT DEFAULT 0,
+    win_pct DECIMAL(4,3) DEFAULT 0.0,
+    pts_per_game DECIMAL(5,1) DEFAULT 0.0,
+    opp_pts_per_game DECIMAL(5,1) DEFAULT 0.0,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Mock Data for Football Standings
-INSERT INTO u18_football_standings (team_name, matches_played, wins, draws, losses, points)
-VALUES
-('Manchester United U18', 20, 16, 2, 2, 50),
-('Manchester City U18', 20, 15, 3, 2, 48),
-('Liverpool U18', 20, 12, 4, 4, 40)
-ON CONFLICT (team_name) DO NOTHING;
+CREATE TABLE IF NOT EXISTS nba_player_stats (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    player_name VARCHAR(255) UNIQUE NOT NULL,
+    team_name VARCHAR(255) NOT NULL,
+    points_per_game DECIMAL(5,1) DEFAULT 0.0,
+    rebounds_per_game DECIMAL(5,1) DEFAULT 0.0,
+    assists_per_game DECIMAL(5,1) DEFAULT 0.0,
+    per DECIMAL(5,1) DEFAULT 0.0,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- Mock Data for PGA Leaderboard
-INSERT INTO pga_leaderboard (tournament_name, player_name, position, total_score, rounds_played)
-VALUES
-('The Masters', 'Scottie Scheffler', 1, -11, 4),
-('The Masters', 'Rory McIlroy', 2, -8, 4),
-('The Masters', 'Jon Rahm', 3, -7, 4);
+CREATE TABLE IF NOT EXISTS nfl_standings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    team_name VARCHAR(255) UNIQUE NOT NULL,
+    wins INT DEFAULT 0,
+    losses INT DEFAULT 0,
+    ties INT DEFAULT 0,
+    points_for INT DEFAULT 0,
+    points_against INT DEFAULT 0,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Initializing structure for NBA and NFL without mock data (scrapers will populate)
 
 -- Mock Data for Football Matches
 INSERT INTO u18_football_matches (match_date, home_team, away_team, home_score, away_score)

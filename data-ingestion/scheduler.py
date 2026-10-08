@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 import schedule
 import time
 import subprocess
@@ -17,16 +18,17 @@ def run_scraper(script_name):
 def job():
     logger.info("Running scheduled data ingestion jobs...")
     run_scraper("scrape_football.py")
-    run_scraper("scrape_golf.py")
+    run_scraper("scrape_nba.py")
+    run_scraper("scrape_nfl.py")
     logger.info("Finished scheduled data ingestion jobs.")
 
-# Schedule the job to run daily at midnight
-schedule.every().day.at("00:00").do(job)
+# Schedule the job to run hourly for fresher data
+schedule.every(1).hours.do(job)
 
 logger.info("Scheduler started. Waiting for jobs...")
 
 # Run immediately once on startup for testing/initial data (optional, but usually helpful)
-# job()
+job()
 
 while True:
     schedule.run_pending()

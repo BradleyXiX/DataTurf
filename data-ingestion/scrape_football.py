@@ -1,27 +1,57 @@
 import logging
-from bs4 import BeautifulSoup
+import requests
+import pandas as pd
 from db import get_db_connection
-import uuid
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def scrape_football_standings():
-    """
-    Mock scraper structure for U18 Football Standings.
-    Once a URL is provided, we would use Playwright or requests to fetch the HTML,
-    then parse it using BeautifulSoup here.
-    """
-    logger.info("Starting scrape for U18 Football Standings...")
+    logger.info("Starting scrape for Premier League Standings from FBref...")
+    url = "https://fbref.com/en/comps/9/Premier-League-Stats"
     
-    # MOCK DATA simulating parsed HTML
-    scraped_data = [
-        {"team_name": "Manchester United U18", "matches_played": 21, "wins": 17, "draws": 2, "losses": 2, "points": 53},
-        {"team_name": "Manchester City U18", "matches_played": 21, "wins": 16, "draws": 3, "losses": 2, "points": 51},
-        {"team_name": "Liverpool U18", "matches_played": 21, "wins": 13, "draws": 4, "losses": 4, "points": 43},
-    ]
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
     
-    update_database(scraped_data)
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        
+        # Read all tables from the HTML
+        tables = pd.read_html(response.text)
+        
+        # The first table on the page is typically the regular season standings
+        df = tables[0]
+        
+        scraped_data = []
+        for index, row in df.iterrows():
+            # FBref tables sometimes have MultiIndex columns or weird names, standardizing:
+            # columns usually: Rk, Squad, MP, W, D, L, GF, GA, GD, Pts, Pts/MP, xG, xGA, xGD, xGD/90, Last 5, Attendance, Top Team Scorer, Goalkeeper, Notes
+            team_name = row['Squad']
+            matches_played = row['MP']
+            wins = row['W']
+            draws = row['D']
+            losses = row['L']
+            points = row['Pts']
+            
+            scraped_data.append({
+                "team_name": str(team_name),
+                "matches_played": int(matches_played),
+                "wins": int(wins),
+                "draws": int(draws),
+                "losses": int(losses),
+                "points": int(points)
+            })
+            
+            # Just take top 20 since Premier League has 20 teams
+            if len(scraped_data) >= 20:
+                break
+                
+        update_database(scraped_data)
+        
+    except Exception as e:
+        logger.error(f"Failed to scrape FBref: {e}")
 
 def update_database(data):
     conn = get_db_connection()
@@ -29,7 +59,6 @@ def update_database(data):
     
     try:
         for row in data:
-            # Upsert logic based on team_name
             cur.execute("""
                 INSERT INTO u18_football_standings (team_name, matches_played, wins, draws, losses, points, last_updated)
                 VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
@@ -49,14 +78,8 @@ def update_database(data):
                 row['points']
             ))
             
-            # For demonstration, also record a mock match for historical charting
-            cur.execute("""
-                INSERT INTO u18_football_matches (match_date, home_team, away_team, home_score, away_score)
-                VALUES (CURRENT_DATE, %s, 'Mock Opponent U18', 2, 1);
-            """, (row['team_name'],))
-            
         conn.commit()
-        logger.info("Successfully updated u18_football_standings in database.")
+        logger.info(f"Successfully updated {len(data)} Premier League teams in database.")
     except Exception as e:
         conn.rollback()
         logger.error(f"Error updating database: {e}")
