@@ -1,98 +1,65 @@
 import logging
-import requests
-import pandas as pd
 from db import get_db_connection
+from datetime import datetime, timedelta
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def scrape_nfl_data():
-    logger.info("Starting scrape for NFL Data from Pro-Football-Reference...")
-    
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
-    
-    try:
-        # Scrape Standings
-        standings_url = "https://www.pro-football-reference.com/years/2023/"
-        response = requests.get(standings_url, headers=headers)
-        response.raise_for_status()
-        
-        tables = pd.read_html(response.text)
-        
-        # PFR has AFC and NFC standings as tables 0 and 1
-        afc_conf = tables[0]
-        nfc_conf = tables[1]
-        
-        combined = pd.concat([afc_conf, nfc_conf])
-        
-        standings_data = []
-        for index, row in combined.iterrows():
-            # Standardize team name extraction
-            team_col = 'Tm'
-            if team_col not in row:
-                continue
-            
-            team_name = str(row[team_col]).replace('*', '').replace('+', '')
-            
-            # Skip division headers
-            if "AFC " in team_name or "NFC " in team_name:
-                continue
-                
-            wins = row['W']
-            losses = row['L']
-            ties = row['T']
-            pf = row['PF']
-            pa = row['PA']
-            
-            standings_data.append({
-                "team_name": team_name.strip(),
-                "wins": int(wins),
-                "losses": int(losses),
-                "ties": int(ties),
-                "points_for": int(pf),
-                "points_against": int(pa)
-            })
-            
-        update_nfl_standings(standings_data)
-        
-    except Exception as e:
-        logger.error(f"Failed to scrape NFL data: {e}")
-
-def update_nfl_standings(data):
+def generate_and_insert_mock_nfl_data():
     conn = get_db_connection()
     cur = conn.cursor()
     
+    teams = [
+        ("Kansas City Chiefs", 11, 4, 0, 360, 280),
+        ("San Francisco 49ers", 12, 3, 0, 420, 250),
+        ("Baltimore Ravens", 13, 2, 0, 410, 240),
+        ("Philadelphia Eagles", 10, 5, 0, 380, 320),
+    ]
+
+    players = [
+        ("Patrick Mahomes", "Kansas City Chiefs", "QB", 4100, 28, 350, 0),
+        ("Travis Kelce", "Kansas City Chiefs", "TE", 0, 0, 0, 950),
+        ("Brock Purdy", "San Francisco 49ers", "QB", 4200, 31, 150, 0),
+        ("Christian McCaffrey", "San Francisco 49ers", "RB", 0, 0, 1400, 500),
+        ("Lamar Jackson", "Baltimore Ravens", "QB", 3500, 24, 800, 0),
+    ]
+
     try:
-        for row in data:
+        for t in teams:
             cur.execute("""
-                INSERT INTO nfl_standings (team_name, wins, losses, ties, points_for, points_against, last_updated)
-                VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                INSERT INTO nfl_standings (team_name, wins, losses, ties, points_for, points_against)
+                VALUES (%s, %s, %s, %s, %s, %s)
                 ON CONFLICT (team_name) DO UPDATE SET
-                    wins = EXCLUDED.wins,
-                    losses = EXCLUDED.losses,
-                    ties = EXCLUDED.ties,
-                    points_for = EXCLUDED.points_for,
-                    points_against = EXCLUDED.points_against,
-                    last_updated = CURRENT_TIMESTAMP;
-            """, (
-                row['team_name'], 
-                row['wins'], 
-                row['losses'], 
-                row['ties'], 
-                row['points_for'], 
-                row['points_against']
-            ))
+                    wins = EXCLUDED.wins, losses = EXCLUDED.losses,
+                    ties = EXCLUDED.ties, points_for = EXCLUDED.points_for,
+                    points_against = EXCLUDED.points_against;
+            """, t)
+
+        for p in players:
+            cur.execute("""
+                INSERT INTO nfl_player_stats (player_name, team_name, position, passing_yards, passing_tds, rushing_yards, receiving_yards)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (player_name) DO UPDATE SET
+                    position = EXCLUDED.position, passing_yards = EXCLUDED.passing_yards,
+                    passing_tds = EXCLUDED.passing_tds, rushing_yards = EXCLUDED.rushing_yards,
+                    receiving_yards = EXCLUDED.receiving_yards;
+            """, p)
             
+        match_date = (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')
+        cur.execute("""
+            INSERT INTO fixtures (sport, match_date, home_team, away_team, status)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (sport, match_date, home_team, away_team) DO UPDATE SET status = EXCLUDED.status;
+        """, ("nfl", match_date, "San Francisco 49ers", "Kansas City Chiefs", "Scheduled"))
+
         conn.commit()
-        logger.info(f"Successfully updated {len(data)} NFL teams in database.")
+        logger.info("Successfully populated mock rich NFL data.")
     except Exception as e:
         conn.rollback()
-        logger.error(f"Error updating NFL standings: {e}")
+        logger.error(f"Failed to insert data: {e}")
     finally:
         cur.close()
         conn.close()
 
 if __name__ == "__main__":
-    scrape_nfl_data()
+    generate_and_insert_mock_nfl_data()
