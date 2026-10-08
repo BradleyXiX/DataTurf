@@ -12,9 +12,19 @@ router.get('/standings/football/u18', async (req, res) => {
   }
 });
 
-router.get('/leaderboard/golf/pga', async (req, res) => {
+router.get('/standings/nba', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM pga_leaderboard ORDER BY position ASC');
+    const { rows } = await db.query('SELECT * FROM nba_standings ORDER BY win_pct DESC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/standings/nfl', async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT * FROM nfl_standings ORDER BY wins DESC, points_for DESC');
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -51,13 +61,24 @@ router.get('/performance/:domain', async (req, res) => {
         };
       });
       return res.json(data);
-    } else if (domain === 'golf') {
-      // Return mock historical chart data for golf
+    } else if (domain === 'nba') {
+      // Return radar chart placeholder stats for NBA team performance
       const data = [
-        { match: 'R1', points: -2 },
-        { match: 'R2', points: -4 },
-        { match: 'R3', points: -6 },
-        { match: 'R4', points: -8 },
+        { stat: 'Offense', val: 110, fullMark: 130 },
+        { stat: 'Defense', val: 105, fullMark: 130 },
+        { stat: 'Pace', val: 98, fullMark: 110 },
+        { stat: 'Rebounds', val: 45, fullMark: 60 },
+        { stat: 'Assists', val: 25, fullMark: 35 },
+      ];
+      return res.json(data);
+    } else if (domain === 'nfl') {
+      // Return radar chart placeholder stats for NFL team performance
+      const data = [
+        { stat: 'Pass Yds', val: 250, fullMark: 350 },
+        { stat: 'Rush Yds', val: 120, fullMark: 200 },
+        { stat: 'Pass Def', val: 200, fullMark: 350 },
+        { stat: 'Rush Def', val: 100, fullMark: 200 },
+        { stat: 'Turnovers', val: 1.2, fullMark: 3 },
       ];
       return res.json(data);
     }

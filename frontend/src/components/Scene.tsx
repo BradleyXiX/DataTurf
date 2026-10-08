@@ -55,11 +55,49 @@ function Particles() {
   );
 }
 
-export default function Scene() {
+function MainBall({ activeTab }: { activeTab: string }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    meshRef.current.rotation.x += 0.005;
+    meshRef.current.rotation.y += 0.01;
+    meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 1.5;
+  });
+
+  let geometry, color, wireframe;
+  
+  if (activeTab === 'nba') {
+    geometry = <sphereGeometry args={[6, 32, 32]} />;
+    color = "#f97316"; // Orange
+    wireframe = true;
+  } else if (activeTab === 'nfl') {
+    geometry = <capsuleGeometry args={[4, 8, 4, 16]} />;
+    color = "#8b4513"; // Brown
+    wireframe = true;
+  } else {
+    // Premier League (Soccer)
+    geometry = <icosahedronGeometry args={[6, 1]} />;
+    color = "#ffffff";
+    wireframe = true;
+  }
+
+  return (
+    <mesh ref={meshRef} position={[15, 0, -10]}>
+      {geometry}
+      <meshStandardMaterial color={color} wireframe={wireframe} transparent opacity={0.3} />
+    </mesh>
+  );
+}
+
+export default function Scene({ activeTab = 'football' }: { activeTab?: string }) {
   return (
     <div className="fixed inset-0 z-[-1] bg-[#0a0a0a]">
       <Canvas camera={{ fov: 75, position: [0, 0, 30] }}>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
         <Particles />
+        <MainBall activeTab={activeTab} />
       </Canvas>
     </div>
   );
