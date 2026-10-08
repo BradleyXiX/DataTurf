@@ -4,7 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Trophy, Activity } from 'lucide-react';
 import { DataTable } from '@/components/DataTable';
 import { PerformanceChart } from '@/components/PerformanceChart';
-import { TeamRadarChart } from '@/components/TeamRadarChart';
+import { MatchupAnalysis } from '@/components/MatchupAnalysis';
+import { TacticsBoard } from '@/components/TacticsBoard';
+import { PlayerComparison } from '@/components/PlayerComparison';
 import Scene from '@/components/Scene';
 import Magnetic from '@/components/Magnetic';
 import gsap from 'gsap';
@@ -15,6 +17,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
+  const [fixturesData, setFixturesData] = useState<any[]>([]);
   const headerRef = useRef<HTMLElement>(null);
   const bentoRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +28,7 @@ export default function Home() {
       setIsLoading(true);
       try {
         let endpoint = '';
-        if (activeTab === 'football') endpoint = '/api/standings/football/u18';
+        if (activeTab === 'football') endpoint = '/api/standings/pl';
         else if (activeTab === 'nba') endpoint = '/api/standings/nba';
         else if (activeTab === 'nfl') endpoint = '/api/standings/nfl';
           
@@ -38,34 +41,15 @@ export default function Home() {
         if (!chartRes.ok) throw new Error('Network response for chart was not ok');
         const cData = await chartRes.json();
         setChartData(cData);
+
+        const sportParam = activeTab === 'football' ? 'pl' : activeTab;
+        const fixturesRes = await fetch(`/api/fixtures/${sportParam}`);
+        if (fixturesRes.ok) {
+           const fData = await fixturesRes.json();
+           setFixturesData(fData.filter((f: any) => f.status === 'Scheduled'));
+        }
       } catch (error) {
         console.warn("Failed to fetch data, using mock data:", error);
-        
-        // Provide mock data so the UI doesn't look empty when backend is off
-        if (activeTab === 'football') {
-          setTableData([
-            { team_name: 'Academy City', matches_played: 10, wins: 8, draws: 1, losses: 1, points: 25 },
-            { team_name: 'Metro United', matches_played: 10, wins: 7, draws: 2, losses: 1, points: 23 },
-          ]);
-        } else if (activeTab === 'nba') {
-          setTableData([
-            { team_name: 'Lakers', wins: 45, losses: 37, win_pct: 0.549, pts_per_game: 115, opp_pts_per_game: 112 },
-            { team_name: 'Warriors', wins: 44, losses: 38, win_pct: 0.537, pts_per_game: 118, opp_pts_per_game: 117 },
-          ]);
-        } else if (activeTab === 'nfl') {
-          setTableData([
-            { team_name: 'Chiefs', wins: 14, losses: 3, ties: 0, points_for: 400, points_against: 300 },
-            { team_name: '49ers', wins: 13, losses: 4, ties: 0, points_for: 390, points_against: 290 },
-          ]);
-        }
-
-        setChartData([
-          { match: 'Week 1', points: 3 },
-          { match: 'Week 2', points: 6 },
-          { match: 'Week 3', points: 7 },
-          { match: 'Week 4', points: 10 },
-          { match: 'Week 5', points: 13 }
-        ]);
       } finally {
         setIsLoading(false);
       }
@@ -138,6 +122,7 @@ export default function Home() {
   }
 
   const themeColor = activeTab === 'nba' ? '#f97316' : activeTab === 'nfl' ? '#8b4513' : '#3b82f6';
+  const upcomingMatch = fixturesData.length > 0 ? fixturesData[0] : null;
 
   return (
     <>
@@ -249,27 +234,52 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Chart Bento */}
-          <div className="md:col-span-12 glass-card rounded-3xl p-6 md:p-10 min-h-[400px] flex flex-col">
-             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold tracking-tight text-white uppercase">Performance Trend</h2>
+          {/* Matchup Analysis Bento */}
+          <div className="md:col-span-6 glass-card rounded-3xl p-6 md:p-10 min-h-[400px] flex flex-col">
+             <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-bold tracking-tight text-white uppercase">Featured Matchup</h2>
             </div>
             <div className="flex-1 w-full relative">
-              {activeTab === 'football' ? (
-                <PerformanceChart 
-                  data={chartData} 
-                  dataKey="points" 
-                  xAxisKey="match" 
-                  isLoading={isLoading}
-                  color={themeColor}
+              {upcomingMatch ? (
+                <MatchupAnalysis
+                  homeTeam={upcomingMatch.home_team}
+                  awayTeam={upcomingMatch.away_team}
+                  sport={activeTab}
+                  themeColor={themeColor}
                 />
               ) : (
-                <TeamRadarChart
-                  data={chartData}
-                  isLoading={isLoading}
-                  color={themeColor}
-                />
+                <div className="w-full h-full flex items-center justify-center text-white/40 uppercase tracking-widest text-sm">
+                  {isLoading ? 'Loading...' : 'No upcoming fixtures'}
+                </div>
               )}
+            </div>
+          </div>
+
+          {/* Tactics Bento */}
+          <div className="md:col-span-6 glass-card rounded-3xl p-6 md:p-10 min-h-[400px] flex flex-col">
+            <div className="flex-1 w-full relative">
+              {upcomingMatch ? (
+                <TacticsBoard
+                  sport={activeTab}
+                  homeTeam={upcomingMatch.home_team}
+                  awayTeam={upcomingMatch.away_team}
+                  themeColor={themeColor}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white/40 uppercase tracking-widest text-sm">
+                  {isLoading ? 'Loading...' : 'No upcoming fixtures'}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Player Comparison Bento */}
+          <div className="md:col-span-6 glass-card rounded-3xl p-6 md:p-10 min-h-[400px] flex flex-col">
+            <div className="flex-1 w-full relative">
+              <PlayerComparison
+                sport={activeTab}
+                themeColor={themeColor}
+              />
             </div>
           </div>
 
