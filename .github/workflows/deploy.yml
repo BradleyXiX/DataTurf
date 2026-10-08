@@ -28,6 +28,7 @@ jobs:
 
       - name: Free up disk space
         run: |
+          sudo docker system prune -af --volumes || true
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
@@ -41,12 +42,18 @@ jobs:
           push: true
           tags: ${{ steps.login-ecr.outputs.registry }}/dataturf-frontend:latest
 
+      - name: Clean Docker cache
+        run: docker system prune -af || true
+
       - name: Build and push Backend image
         uses: docker/build-push-action@v5
         with:
           context: ./backend
           push: true
           tags: ${{ steps.login-ecr.outputs.registry }}/dataturf-backend:latest
+
+      - name: Clean Docker cache
+        run: docker system prune -af || true
 
       - name: Build and push Data Ingestion image
         uses: docker/build-push-action@v5
