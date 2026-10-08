@@ -24,15 +24,15 @@ export default function Home() {
       setIsLoading(true);
       try {
         const endpoint = activeTab === 'football' 
-          ? 'http://localhost:5000/api/standings/football/u18'
-          : 'http://localhost:5000/api/leaderboard/golf/pga';
+          ? '/api/standings/football/u18'
+          : '/api/leaderboard/golf/pga';
           
         const res = await fetch(endpoint);
         if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
         setTableData(data);
 
-        const chartRes = await fetch(`http://localhost:5000/api/performance/${activeTab}`);
+        const chartRes = await fetch(`/api/performance/${activeTab}`);
         if (!chartRes.ok) throw new Error('Network response for chart was not ok');
         const cData = await chartRes.json();
         setChartData(cData);
