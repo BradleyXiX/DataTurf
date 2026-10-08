@@ -2,9 +2,19 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-router.get('/standings/football/u18', async (req, res) => {
+router.get('/standings/pl', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM u18_football_standings ORDER BY points DESC');
+    const { rows } = await db.query('SELECT * FROM pl_standings ORDER BY points DESC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/players/pl', async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT * FROM pl_player_stats ORDER BY goals DESC');
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -22,9 +32,40 @@ router.get('/standings/nba', async (req, res) => {
   }
 });
 
+router.get('/players/nba', async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT * FROM nba_player_stats ORDER BY points_per_game DESC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.get('/standings/nfl', async (req, res) => {
   try {
     const { rows } = await db.query('SELECT * FROM nfl_standings ORDER BY wins DESC, points_for DESC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/players/nfl', async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT * FROM nfl_player_stats ORDER BY passing_yards DESC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/fixtures/:sport', async (req, res) => {
+  const { sport } = req.params;
+  try {
+    const { rows } = await db.query('SELECT * FROM fixtures WHERE sport = $1 ORDER BY match_date ASC', [sport]);
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -38,26 +79,16 @@ router.get('/performance/:domain', async (req, res) => {
     if (domain === 'football') {
       const { rows } = await db.query(`
         SELECT match_date, home_team, away_team, home_score, away_score 
-        FROM u18_football_matches 
-        WHERE home_team = 'Manchester United U18' OR away_team = 'Manchester United U18'
+        FROM fixtures 
+        WHERE sport = 'pl' AND status = 'Finished'
         ORDER BY match_date ASC
+        LIMIT 5
       `);
       
-      let cumulativePoints = 0;
       const data = rows.map((row, index) => {
-        let matchPoints = 0;
-        if (row.home_team === 'Manchester United U18') {
-          if (row.home_score > row.away_score) matchPoints = 3;
-          else if (row.home_score === row.away_score) matchPoints = 1;
-        } else {
-          if (row.away_score > row.home_score) matchPoints = 3;
-          else if (row.away_score === row.home_score) matchPoints = 1;
-        }
-        cumulativePoints += matchPoints;
-        
         return {
-          match: `M${index + 1}`,
-          points: cumulativePoints
+          match: \`M\${index + 1}\`,
+          points: (row.home_score || 0) + (row.away_score || 0) // Example placeholder metric for form
         };
       });
       return res.json(data);
@@ -87,6 +118,41 @@ router.get('/performance/:domain', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+// GET Managers by sport
+router.get('/managers/:sport', async (req, res) => {
+    try {
+        const { sport } = req.params;
+        const result = await db.query('SELECT * FROM managers WHERE sport = $1 ORDER BY win_pct DESC', [sport]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+// GET Predicted Lineups for a specific fixture (by sport and matchup)
+router.get('/predicted-lineups/:sport/:home_team/:away_team', async (req, res) => {
+    try {
+        const { sport, home_team, away_team } = req.params;
+        const fixtureResult = await db.query(
+            'SELECT id FROM fixtures WHERE sport = $1 AND home_team = $2 AND away_team = $3',
+            [sport, home_team, away_team]
+        );
+        if (fixtureResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Fixture not found' });
+        }
+        const fixtureId = fixtureResult.rows[0].id;
+        const lineupsResult = await db.query(
+            'SELECT team_name, formation, players FROM predicted_lineups WHERE fixture_id = $1',
+            [fixtureId]
+        );
+        res.json(lineupsResult.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
 module.exports = router;
