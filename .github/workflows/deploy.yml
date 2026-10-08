@@ -105,11 +105,16 @@ jobs:
             df -h
             docker system df || true
 
-            # Remove stopped containers, unused images, and build cache.
-            # This does not remove the named pgdata volume.
+            # Stop running containers so their images can be removed
+            docker compose -f docker-compose.prod.yml down || true
+
+            # Aggressively clean up everything except named volumes (pgdata)
             docker container prune -f
             docker image prune -af
             docker builder prune -af
+
+            echo "Disk usage after cleanup:"
+            df -h
 
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
