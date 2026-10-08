@@ -28,7 +28,7 @@ schedule.every(1).hours.do(job)
 logger.info("Scheduler started. Waiting for jobs...")
 
 # Run immediately once on startup for testing/initial data (optional, but usually helpful)
-# job()
+job()
 
 while True:
     schedule.run_pending()
