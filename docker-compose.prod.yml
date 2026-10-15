@@ -29,6 +29,7 @@ services:
     container_name: dataturf_frontend
     environment:
       - NEXT_PUBLIC_API_URL=/api
+      - BACKEND_URL=http://backend:5000
     depends_on:
       - backend
     restart: unless-stopped
