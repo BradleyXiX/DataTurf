@@ -87,7 +87,7 @@ router.get('/performance/:domain', async (req, res) => {
       
       const data = rows.map((row, index) => {
         return {
-          match: \`M\${index + 1}\`,
+          match: `M${index + 1}`,
           points: (row.home_score || 0) + (row.away_score || 0) // Example placeholder metric for form
         };
       });
