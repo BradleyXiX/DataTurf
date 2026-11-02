@@ -1,10 +1,8 @@
 node_modules/
 .env
+.env.local
+.env.*.local
 
-# AWS Deployment
-dataturf_deployer_key
-dataturf_deployer_key.pub
-infrastructure/.terraform/
-infrastructure/terraform.tfstate*
-infrastructure/.terraform.lock.hcl
-infrastructure/terraform.tfvars
+.venv/
+env/
+venv/
