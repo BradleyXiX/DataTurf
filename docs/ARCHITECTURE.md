@@ -1,14 +1,20 @@
 # System Architecture
 
-## 1. Data Ingestion Pipeline (AWS / Python)
-* **Scraper:** Python scripts use Playwright and BeautifulSoup to extract data from target sports domains.
-* **Compute:** Scripts are containerized via Docker and stored in AWS ECR.
-* **Automation:** AWS EventBridge triggers an AWS Lambda function on a defined cron schedule to execute the containers, keeping data fresh without manual intervention.
+## 1. Data Ingestion Pipeline (Python / Render)
+* **Scraper:** Python scripts extract and format data from target sports sources.
+* **Compute & Automation:** Runs on Render's free tier via `scheduler.py`, executing hourly data ingestion jobs and exposing a lightweight HTTP health check endpoint.
+* **Database Target:** Directly writes data to the Supabase PostgreSQL database using standard connection URLs with SSL.
 
-## 2. Backend API (Node.js / Express)
-* **Processing:** The Lambda function sanitizes the scraped payload and pushes it to a PostgreSQL database.
-* **Gateway:** A lightweight Node.js/Express server connects to PostgreSQL and exposes the data via RESTful endpoints.
+## 2. Backend API (Node.js / Express / Render)
+* **Gateway:** A Node.js/Express server hosted on Render's free tier connects to the Supabase PostgreSQL database with connection pooling and SSL support.
+* **Endpoints:** Exposes RESTful endpoints for sports standings, player stats, fixtures, performance charts, and tactical lineups.
+* **Health Checks:** Provides `/health` and `/api/health` endpoints for Render service health monitoring.
 
-## 3. Frontend Application (Next.js)
-* **Framework:** Next.js (App Router) handles the routing and initial server-side rendering for speed.
-* **Client Components:** React handles the highly interactive elements (tables, charts, toggles) on the client side.
+## 3. Frontend Application (Next.js / Vercel)
+* **Framework:** Next.js (App Router) deployed on Vercel's edge network for lightning-fast delivery.
+* **API Integration:** Connects to the Render backend via Next.js serverless rewrites (configured via `BACKEND_URL`) or direct client API calls (configured via `NEXT_PUBLIC_API_URL`).
+* **Client Components:** React handles interactive elements (Bento grids, tables, charts, 3D Canvas, and tactical lineup boards).
+
+## 4. Managed Database (Supabase PostgreSQL)
+* **Storage:** Cloud PostgreSQL hosted on Supabase free tier with SSL encryption.
+* **Schema:** Relational schema supporting Premier League, NBA, and NFL standings, player performance metrics, and fixture schedules.
