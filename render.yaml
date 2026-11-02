@@ -1,0 +1,49 @@
+services:
+  # ==============================================================================
+  # 1. Backend Web Service (Node.js Express API)
+  # ==============================================================================
+  - type: web
+    name: dataturf-backend
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        sync: false # Set to your Supabase PostgreSQL connection URI in Render Dashboard
+
+  # ==============================================================================
+  # 2. Data Ingestion Worker (Python Scrapers + Scheduler)
+  # ------------------------------------------------------------------------------
+  # Render's free tier only offers free compute instances for Web Services
+  # (type: web). Background workers (type: worker) require paid Starter tiers.
+  # To run 100% free on Render, this service is configured as a Web Service with
+  # an embedded lightweight HTTP health server on $PORT alongside its background
+  # scraping schedule.
+  # (If you later upgrade to a paid Render plan, you can change type to 'worker'
+  # and plan to 'starter').
+  # ==============================================================================
+  - type: web
+    name: dataturf-data-ingestion
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: data-ingestion
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scheduler.py
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "true"
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false # Set to your Supabase PostgreSQL connection URI in Render Dashboard
+
