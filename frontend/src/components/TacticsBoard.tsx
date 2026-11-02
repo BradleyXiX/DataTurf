@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiUrl } from '@/lib/api';
 
 interface TacticsBoardProps {
   sport: string;
@@ -18,7 +19,7 @@ export function TacticsBoard({ sport, homeTeam, awayTeam, themeColor }: TacticsB
       try {
         const sportParam = sport === 'football' ? 'pl' : sport;
         // In a real app we would pass these properly encoded
-        const res = await fetch(`/api/predicted-lineups/${sportParam}/${encodeURIComponent(homeTeam)}/${encodeURIComponent(awayTeam)}`);
+        const res = await fetch(apiUrl(`/api/predicted-lineups/${sportParam}/${encodeURIComponent(homeTeam)}/${encodeURIComponent(awayTeam)}`));
         if (res.ok) {
           const data = await res.json();
           const home = data.find((d: any) => d.team_name === homeTeam);

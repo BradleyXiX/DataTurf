@@ -9,6 +9,7 @@ import { TacticsBoard } from '@/components/TacticsBoard';
 import { PlayerComparison } from '@/components/PlayerComparison';
 import Scene from '@/components/Scene';
 import Magnetic from '@/components/Magnetic';
+import { apiUrl } from '@/lib/api';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
@@ -77,7 +78,7 @@ export default function Home() {
         else if (activeTab === 'nfl') endpoint = '/api/standings/nfl';
           
         try {
-          const res = await fetch(endpoint);
+          const res = await fetch(apiUrl(endpoint));
           if (res.ok) {
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {
@@ -93,7 +94,7 @@ export default function Home() {
         }
 
         try {
-          const chartRes = await fetch(`/api/performance/${activeTab}`);
+          const chartRes = await fetch(apiUrl(`/api/performance/${activeTab}`));
           if (chartRes.ok) {
             const cData = await chartRes.json();
             setChartData(cData);
@@ -104,7 +105,7 @@ export default function Home() {
 
         const sportParam = activeTab === 'football' ? 'pl' : activeTab;
         try {
-          const fixturesRes = await fetch(`/api/fixtures/${sportParam}`);
+          const fixturesRes = await fetch(apiUrl(`/api/fixtures/${sportParam}`));
           if (fixturesRes.ok) {
             const fData = await fixturesRes.json();
             const scheduled = Array.isArray(fData) ? fData.filter((f: any) => f.status === 'Scheduled') : [];
