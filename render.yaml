@@ -40,10 +40,11 @@ services:
     startCommand: python scheduler.py
     healthCheckPath: /health
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
       - key: PYTHONUNBUFFERED
         value: "true"
       - key: PORT
         value: 10000
       - key: DATABASE_URL
         sync: false # Set to your Supabase PostgreSQL connection URI in Render Dashboard
-
