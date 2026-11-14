@@ -1,0 +1,221 @@
+{
+  "schemaVersion": "1.0.0",
+  "provenance": "fixture-demo",
+  "isDemo": true,
+  "competition": {
+    "id": "PL",
+    "name": "Premier League",
+    "code": "PL"
+  },
+  "season": {
+    "startYear": 2024,
+    "endYear": 2025,
+    "label": "2024/2025"
+  },
+  "source": "fixture-demo",
+  "attribution": "Demo fixture data (not live Premier League records)",
+  "fetchedAt": "2026-11-14T20:19:19.278797Z",
+  "sourceUpdatedAt": "2024-08-26T12:00:00Z",
+  "coverage": {
+    "windowStart": "2024-08-17T11:30:00Z",
+    "windowEnd": "2024-09-01T15:30:00Z",
+    "totalMatches": 6,
+    "completedMatches": 4,
+    "scheduledMatches": 1,
+    "postponedMatches": 1,
+    "cancelledMatches": 0,
+    "unknownMatches": 0
+  },
+  "teams": {
+    "liverpool": {
+      "id": "liverpool",
+      "providerTeamId": 64,
+      "name": "Liverpool FC",
+      "shortName": "Liverpool",
+      "tla": "LIV",
+      "crestUrl": "https://crests.football-data.org/64.png"
+    },
+    "man-city": {
+      "id": "man-city",
+      "providerTeamId": 65,
+      "name": "Manchester City FC",
+      "shortName": "Man City",
+      "tla": "MCI",
+      "crestUrl": "https://crests.football-data.org/65.png"
+    },
+    "arsenal": {
+      "id": "arsenal",
+      "providerTeamId": 57,
+      "name": "Arsenal FC",
+      "shortName": "Arsenal",
+      "tla": "ARS",
+      "crestUrl": "https://crests.football-data.org/57.png"
+    },
+    "chelsea": {
+      "id": "chelsea",
+      "providerTeamId": 61,
+      "name": "Chelsea FC",
+      "shortName": "Chelsea",
+      "tla": "CHE",
+      "crestUrl": "https://crests.football-data.org/61.png"
+    }
+  },
+  "standings": [
+    {
+      "position": 1,
+      "teamId": "liverpool",
+      "playedGames": 3,
+      "won": 3,
+      "draw": 0,
+      "lost": 0,
+      "points": 9,
+      "goalsFor": 7,
+      "goalsAgainst": 0,
+      "goalDifference": 7,
+      "form": "W,W,W"
+    },
+    {
+      "position": 2,
+      "teamId": "man-city",
+      "playedGames": 3,
+      "won": 3,
+      "draw": 0,
+      "lost": 0,
+      "points": 9,
+      "goalsFor": 9,
+      "goalsAgainst": 2,
+      "goalDifference": 7,
+      "form": "W,W,W"
+    },
+    {
+      "position": 3,
+      "teamId": "arsenal",
+      "playedGames": 3,
+      "won": 2,
+      "draw": 1,
+      "lost": 0,
+      "points": 7,
+      "goalsFor": 5,
+      "goalsAgainst": 1,
+      "goalDifference": 4,
+      "form": "W,W,D"
+    },
+    {
+      "position": 4,
+      "teamId": "chelsea",
+      "playedGames": 3,
+      "won": 1,
+      "draw": 1,
+      "lost": 1,
+      "points": 4,
+      "goalsFor": 7,
+      "goalsAgainst": 5,
+      "goalDifference": 2,
+      "form": "L,W,D"
+    }
+  ],
+  "matches": [
+    {
+      "id": "PL-2024-M1001",
+      "providerMatchId": 1001,
+      "matchday": 1,
+      "kickoffUtc": "2024-08-17T11:30:00Z",
+      "status": "COMPLETED",
+      "homeTeamId": "arsenal",
+      "awayTeamId": "chelsea",
+      "score": {
+        "home": 2,
+        "away": 0,
+        "halfTime": {
+          "home": 1,
+          "away": 0
+        }
+      }
+    },
+    {
+      "id": "PL-2024-M1002",
+      "providerMatchId": 1002,
+      "matchday": 1,
+      "kickoffUtc": "2024-08-17T14:00:00Z",
+      "status": "COMPLETED",
+      "homeTeamId": "liverpool",
+      "awayTeamId": "man-city",
+      "score": {
+        "home": 2,
+        "away": 1,
+        "halfTime": {
+          "home": 1,
+          "away": 1
+        }
+      }
+    },
+    {
+      "id": "PL-2024-M1003",
+      "providerMatchId": 1003,
+      "matchday": 2,
+      "kickoffUtc": "2024-08-24T14:00:00Z",
+      "status": "COMPLETED",
+      "homeTeamId": "chelsea",
+      "awayTeamId": "liverpool",
+      "score": {
+        "home": 0,
+        "away": 3,
+        "halfTime": {
+          "home": 0,
+          "away": 1
+        }
+      }
+    },
+    {
+      "id": "PL-2024-M1004",
+      "providerMatchId": 1004,
+      "matchday": 2,
+      "kickoffUtc": "2024-08-24T16:30:00Z",
+      "status": "COMPLETED",
+      "homeTeamId": "man-city",
+      "awayTeamId": "arsenal",
+      "score": {
+        "home": 0,
+        "away": 0,
+        "halfTime": {
+          "home": 0,
+          "away": 0
+        }
+      }
+    },
+    {
+      "id": "PL-2024-M1005",
+      "providerMatchId": 1005,
+      "matchday": 3,
+      "kickoffUtc": "2024-08-31T14:00:00Z",
+      "status": "POSTPONED",
+      "homeTeamId": "arsenal",
+      "awayTeamId": "liverpool",
+      "score": {
+        "home": null,
+        "away": null,
+        "halfTime": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "id": "PL-2024-M1006",
+      "providerMatchId": 1006,
+      "matchday": 3,
+      "kickoffUtc": "2024-09-01T15:30:00Z",
+      "status": "SCHEDULED",
+      "homeTeamId": "chelsea",
+      "awayTeamId": "man-city",
+      "score": {
+        "home": null,
+        "away": null,
+        "halfTime": {
+          "home": null,
+          "away": null
+        }
+      }
+    }
+  ]
+}

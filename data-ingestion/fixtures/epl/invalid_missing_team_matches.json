@@ -1,0 +1,22 @@
+{
+  "filters": { "season": "2024" },
+  "resultSet": { "count": 1, "first": "2024-08-17", "last": "2024-08-17", "played": 1 },
+  "competition": { "id": 2021, "name": "Premier League", "code": "PL" },
+  "matches": [
+    {
+      "id": 2001,
+      "utcDate": "2024-08-17T11:30:00Z",
+      "status": "FINISHED",
+      "matchday": 1,
+      "lastUpdated": "2024-08-18T09:00:00Z",
+      "homeTeam": { "id": 99999, "name": "Unknown Ghost FC", "shortName": "Unknown", "tla": "UNK", "crest": null },
+      "awayTeam": { "id": 57, "name": "Arsenal FC", "shortName": "Arsenal", "tla": "ARS", "crest": "https://crests.football-data.org/57.png" },
+      "score": {
+        "winner": "AWAY_TEAM",
+        "duration": "REGULAR",
+        "fullTime": { "home": 0, "away": 2 },
+        "halfTime": { "home": 0, "away": 1 }
+      }
+    }
+  ]
+}

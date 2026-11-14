@@ -1,0 +1,37 @@
+{
+  "filters": { "season": "2024" },
+  "resultSet": { "count": 2, "first": "2024-08-17", "last": "2024-08-17", "played": 2 },
+  "competition": { "id": 2021, "name": "Premier League", "code": "PL" },
+  "matches": [
+    {
+      "id": 1001,
+      "utcDate": "2024-08-17T11:30:00Z",
+      "status": "FINISHED",
+      "matchday": 1,
+      "lastUpdated": "2024-08-18T09:00:00Z",
+      "homeTeam": { "id": 57, "name": "Arsenal FC", "shortName": "Arsenal", "tla": "ARS", "crest": "https://crests.football-data.org/57.png" },
+      "awayTeam": { "id": 61, "name": "Chelsea FC", "shortName": "Chelsea", "tla": "CHE", "crest": "https://crests.football-data.org/61.png" },
+      "score": {
+        "winner": "HOME_TEAM",
+        "duration": "REGULAR",
+        "fullTime": { "home": 2, "away": 0 },
+        "halfTime": { "home": 1, "away": 0 }
+      }
+    },
+    {
+      "id": 1001,
+      "utcDate": "2024-08-17T14:00:00Z",
+      "status": "FINISHED",
+      "matchday": 1,
+      "lastUpdated": "2024-08-18T09:00:00Z",
+      "homeTeam": { "id": 64, "name": "Liverpool FC", "shortName": "Liverpool", "tla": "LIV", "crest": "https://crests.football-data.org/64.png" },
+      "awayTeam": { "id": 65, "name": "Manchester City FC", "shortName": "Man City", "tla": "MCI", "crest": "https://crests.football-data.org/65.png" },
+      "score": {
+        "winner": "HOME_TEAM",
+        "duration": "REGULAR",
+        "fullTime": { "home": 2, "away": 1 },
+        "halfTime": { "home": 1, "away": 1 }
+      }
+    }
+  ]
+}
