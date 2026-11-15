@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Compass, Scale, ShieldCheck } from 'lucide-react';
+import { PitchArtwork } from './PitchArtwork';
 
 interface StudioNavProps {
   isDemo?: boolean;
@@ -17,61 +17,55 @@ export function StudioNav({
   const querySuffix = isDemo ? '?demo=true' : '';
 
   return (
-    <header className="border-b border-white/10 bg-[#0e1117]/90 backdrop-blur-md sticky top-0 z-40">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+    <header className="border-b border-white/[0.08] bg-[#090b0e]/95 backdrop-blur-md sticky top-0 z-40">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
           <Link
             href={`/${querySuffix}`}
-            className="flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-lg py-1 px-1.5"
+            className="flex items-center gap-2.5 focus:outline-none focus:ring-1 focus:ring-emerald-400/80 rounded py-1 px-1 transition-opacity hover:opacity-90"
+            aria-label="DataTurf Premier League Research Studio Home"
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-base">
-              DT
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-slate-100 text-sm tracking-wide leading-none">
+            <PitchArtwork variant="mark" className="w-7 h-7 shrink-0" />
+            <div className="flex items-baseline gap-2">
+              <span className="font-semibold text-white text-sm tracking-tight">
                 DataTurf
               </span>
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
-                PL Research Studio
+              <span className="text-[10px] text-emerald-400/90 font-mono tracking-wider uppercase hidden xs:inline">
+                Research Studio
               </span>
             </div>
           </Link>
 
-          <nav aria-label="Studio Navigation" className="hidden sm:flex items-center gap-1 text-sm font-medium">
+          <nav aria-label="Studio Navigation" className="flex items-center gap-1 text-xs">
             <Link
               href={`/${querySuffix}`}
-              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 rounded transition-colors ${
                 currentRoute === 'explore'
-                  ? 'bg-white/10 text-white font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  ? 'bg-white/[0.08] text-white font-medium'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
               }`}
             >
-              <Compass className="w-4 h-4" />
-              <span>Explore</span>
+              Explore
             </Link>
             <Link
               href={`/compare${querySuffix}`}
-              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 rounded transition-colors ${
                 currentRoute === 'compare'
-                  ? 'bg-white/10 text-white font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  ? 'bg-white/[0.08] text-white font-medium'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
               }`}
             >
-              <Scale className="w-4 h-4" />
-              <span>Compare</span>
+              Compare
             </Link>
           </nav>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 text-xs">
-          <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 font-mono text-slate-300">
-            {seasonLabel}
+        <div className="flex items-center gap-3 text-xs font-mono">
+          <span className="text-zinc-400 border border-white/[0.08] bg-white/[0.02] px-2 py-0.5 rounded text-[11px]">
+            EPL {seasonLabel}
           </span>
-          <span
-            className="hidden md:inline-flex items-center gap-1 text-[11px] text-slate-500"
-            title={sourceAttribution}
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+          <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] text-zinc-500">
+            <span className={`w-1.5 h-1.5 rounded-full ${isDemo ? 'bg-amber-400' : 'bg-emerald-400'}`} />
             <span>{isDemo ? 'Demo Fixtures' : 'football-data.org'}</span>
           </span>
         </div>

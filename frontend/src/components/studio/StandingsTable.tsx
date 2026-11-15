@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { EplStandingRow, EplTeam } from '@/lib/epl/types';
-import { Scale, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 interface StandingsTableProps {
   standings: EplStandingRow[];
@@ -12,34 +12,34 @@ export function StandingsTable({ standings, teams, isDemo = false }: StandingsTa
   const querySuffix = isDemo ? '?demo=true' : '';
 
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-white/10 bg-[#12151c]/90 shadow-xl">
-      <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-        <h3 className="font-semibold text-slate-100 text-sm tracking-wide">
-          Official Premier League Standings
-        </h3>
-        <span className="text-xs text-slate-400">
-          Rankings are official table order
+    <div className="w-full rounded-lg border border-white/[0.08] bg-[#0d1015] overflow-hidden">
+      <div className="px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-zinc-100 tracking-tight">
+          League Table
+        </h2>
+        <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+          Official Standings
         </span>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm border-collapse min-w-[620px]" aria-label="Premier League Standings">
+        <table className="w-full text-left text-sm border-collapse min-w-[580px]" aria-label="Premier League Standings">
           <thead>
-            <tr className="border-b border-white/10 bg-white/[0.02] text-xs font-semibold text-slate-400 font-mono uppercase tracking-wider">
-              <th scope="col" className="py-2.5 px-3 w-12 text-center">Pos</th>
-              <th scope="col" className="py-2.5 px-4">Club</th>
-              <th scope="col" className="py-2.5 px-3 text-center w-12">P</th>
-              <th scope="col" className="py-2.5 px-3 text-center w-12">W</th>
-              <th scope="col" className="py-2.5 px-3 text-center w-12">D</th>
-              <th scope="col" className="py-2.5 px-3 text-center w-12">L</th>
-              <th scope="col" className="py-2.5 px-3 text-center w-14">GF</th>
-              <th scope="col" className="py-2.5 px-3 text-center w-14">GA</th>
-              <th scope="col" className="py-2.5 px-3 text-center w-14">GD</th>
-              <th scope="col" className="py-2.5 px-3 text-center w-16 font-bold text-slate-200">Pts</th>
-              <th scope="col" className="py-2.5 px-4 text-center">Actions</th>
+            <tr className="border-b border-white/[0.08] bg-white/[0.015] text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+              <th scope="col" className="py-2 px-3 w-10 text-center">#</th>
+              <th scope="col" className="py-2 px-4">Club</th>
+              <th scope="col" className="py-2 px-2.5 text-right w-10">P</th>
+              <th scope="col" className="py-2 px-2.5 text-right w-10">W</th>
+              <th scope="col" className="py-2 px-2.5 text-right w-10">D</th>
+              <th scope="col" className="py-2 px-2.5 text-right w-10">L</th>
+              <th scope="col" className="py-2 px-2.5 text-right w-12 hidden sm:table-cell">GF</th>
+              <th scope="col" className="py-2 px-2.5 text-right w-12 hidden sm:table-cell">GA</th>
+              <th scope="col" className="py-2 px-2.5 text-right w-12">GD</th>
+              <th scope="col" className="py-2 px-3 text-right w-12 font-bold text-zinc-200">Pts</th>
+              <th scope="col" className="py-2 px-4 text-right w-24">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5 font-mono text-xs sm:text-sm">
+          <tbody className="divide-y divide-white/[0.04] font-mono text-xs">
             {standings.map((row) => {
               const team = teams[row.teamId];
               const clubName = team ? team.name : row.teamId;
@@ -48,58 +48,51 @@ export function StandingsTable({ standings, teams, isDemo = false }: StandingsTa
               return (
                 <tr
                   key={row.teamId}
-                  className="hover:bg-white/[0.03] transition-colors group"
+                  className="hover:bg-white/[0.025] transition-colors group"
                 >
-                  <td className="py-3 px-3 text-center font-bold text-slate-300">
+                  <td className="py-2.5 px-3 text-center text-zinc-500 font-medium">
                     {row.position}
                   </td>
-                  <td className="py-3 px-4 font-sans font-medium text-slate-100">
+                  <td className="py-2.5 px-4 font-sans font-medium text-zinc-200">
                     <Link
                       href={`/club/${row.teamId}${querySuffix}`}
-                      className="inline-flex items-center gap-2 hover:text-emerald-400 transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-400 rounded px-1 -mx-1"
+                      className="inline-flex items-center gap-2.5 hover:text-emerald-400 transition-colors focus:outline-none focus:underline"
                     >
                       {team?.crestUrl && (
                         <img
                           src={team.crestUrl}
                           alt=""
-                          className="w-5 h-5 object-contain shrink-0"
+                          className="w-4 h-4 object-contain shrink-0"
                           aria-hidden="true"
                           loading="lazy"
                         />
                       )}
                       <span>{shortName}</span>
-                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 text-emerald-400 transition-opacity" />
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 text-zinc-500 transition-opacity" />
                     </Link>
                   </td>
-                  <td className="py-3 px-3 text-center text-slate-300">{row.playedGames}</td>
-                  <td className="py-3 px-3 text-center text-slate-300">{row.won}</td>
-                  <td className="py-3 px-3 text-center text-slate-300">{row.draw}</td>
-                  <td className="py-3 px-3 text-center text-slate-300">{row.lost}</td>
-                  <td className="py-3 px-3 text-center text-slate-400">{row.goalsFor}</td>
-                  <td className="py-3 px-3 text-center text-slate-400">{row.goalsAgainst}</td>
-                  <td className={`py-3 px-3 text-center font-semibold ${row.goalDifference > 0 ? 'text-emerald-400' : row.goalDifference < 0 ? 'text-rose-400' : 'text-slate-400'}`}>
+                  <td className="py-2.5 px-2.5 text-right text-zinc-300">{row.playedGames}</td>
+                  <td className="py-2.5 px-2.5 text-right text-zinc-300">{row.won}</td>
+                  <td className="py-2.5 px-2.5 text-right text-zinc-300">{row.draw}</td>
+                  <td className="py-2.5 px-2.5 text-right text-zinc-300">{row.lost}</td>
+                  <td className="py-2.5 px-2.5 text-right text-zinc-400 hidden sm:table-cell">{row.goalsFor}</td>
+                  <td className="py-2.5 px-2.5 text-right text-zinc-400 hidden sm:table-cell">{row.goalsAgainst}</td>
+                  <td className={`py-2.5 px-2.5 text-right font-medium ${
+                    row.goalDifference > 0 ? 'text-emerald-400' : row.goalDifference < 0 ? 'text-rose-400' : 'text-zinc-400'
+                  }`}>
                     {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
                   </td>
-                  <td className="py-3 px-3 text-center font-bold text-base text-emerald-400">
+                  <td className="py-2.5 px-3 text-right font-bold text-zinc-100">
                     {row.points}
                   </td>
-                  <td className="py-3 px-4 text-center font-sans">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <Link
-                        href={`/club/${row.teamId}${querySuffix}`}
-                        className="text-xs px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
-                      >
-                        Inspect
-                      </Link>
-                      <Link
-                        href={`/compare${querySuffix ? `${querySuffix}&` : '?'}left=${row.teamId}`}
-                        className="text-xs px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 transition-colors inline-flex items-center gap-1"
-                        title={`Compare ${shortName}`}
-                      >
-                        <Scale className="w-3 h-3" />
-                        <span>Compare</span>
-                      </Link>
-                    </div>
+                  <td className="py-2.5 px-4 text-right font-sans">
+                    <Link
+                      href={`/compare${querySuffix ? `${querySuffix}&` : '?'}left=${row.teamId}`}
+                      className="text-xs text-zinc-400 hover:text-emerald-400 px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 transition-colors inline-block"
+                      title={`Compare ${shortName}`}
+                    >
+                      Compare
+                    </Link>
                   </td>
                 </tr>
               );

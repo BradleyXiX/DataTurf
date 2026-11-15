@@ -5,26 +5,27 @@ import { StudioNav } from '@/components/studio/StudioNav';
 import { StandingsTable } from '@/components/studio/StandingsTable';
 import { MatchEvidenceList } from '@/components/studio/MatchEvidenceList';
 import { CompareLauncher } from '@/components/studio/CompareLauncher';
-import { ShieldCheck, Calendar, Activity, Info } from 'lucide-react';
+import { PitchArtwork } from '@/components/studio/PitchArtwork';
+import { Info } from 'lucide-react';
 
 interface PageProps {
-  searchParams?: Promise<{ demo?: string }> | { demo?: string };
+  searchParams?: Promise<{ demo?: string }>;
 }
 
 export default async function HomePage({ searchParams }: PageProps) {
-  const resolvedParams = await Promise.resolve(searchParams);
+  const resolvedParams = await searchParams;
   const allowDemo = resolvedParams?.demo === 'true';
 
   const { snapshot, status, isStale, isDemo, error } = loadEplSnapshot({
     allowDemo,
   });
 
-  // If no snapshot is available, display truthful unavailable state
+  // Truthful unavailable state when no valid provider snapshot exists
   if (!snapshot || status !== 'ready') {
     return (
-      <main className="min-h-screen bg-[#0a0c10] text-slate-100 flex flex-col font-sans">
+      <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans">
         <StudioNav currentRoute="explore" isDemo={allowDemo} />
-        <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="flex-1 flex items-center justify-center px-4 py-16">
           <UnavailableState
             reason={
               status === 'demo_rejected'
@@ -45,7 +46,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     .reverse();
 
   return (
-    <main className="min-h-screen bg-[#0a0c10] text-slate-100 flex flex-col font-sans pb-16">
+    <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans pb-16 relative">
       {isDemo && <DemoBanner currentPath="/?demo=true" />}
       <StudioNav
         isDemo={isDemo}
@@ -54,59 +55,70 @@ export default async function HomePage({ searchParams }: PageProps) {
         currentRoute="explore"
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full mt-6 space-y-8">
-        {/* Stale Warning Banner */}
-        {isStale && (
-          <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-600/30 text-amber-200 text-xs sm:text-sm flex items-center gap-2.5">
-            <Info className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>
-              Snapshot is older than 48 hours (fetched at {new Date(snapshot.fetchedAt).toLocaleString()}). Showing cached season state.
-            </span>
-          </div>
-        )}
-
-        {/* Studio Header / Season Summary */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-6">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 uppercase tracking-widest mb-1.5">
-              <Activity className="w-3.5 h-3.5" />
-              <span>Premier League Analysis Studio</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-              Season {snapshot.season.label}
-            </h1>
-            <p className="text-sm text-slate-400 mt-1 max-w-xl">
-              Inspect club form, compare two sides side-by-side, and trace every metric to real games.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-slate-400 bg-white/[0.02] border border-white/10 p-3 rounded-xl">
-            <div>
-              <span className="text-slate-500 block">Matches</span>
-              <span className="text-slate-200 font-bold">
-                {snapshot.coverage.completedMatches} / {snapshot.coverage.totalMatches} completed
-              </span>
-            </div>
-            <div className="w-px h-6 bg-white/10" />
-            <div>
-              <span className="text-slate-500 block">Source</span>
-              <span className="text-slate-200 font-bold">{snapshot.source}</span>
-            </div>
-          </div>
+      {/* Hero Section with Original Pitch Artwork */}
+      <section className="relative border-b border-white/[0.08] overflow-hidden pt-10 pb-8 px-4 sm:px-6">
+        {/* Subtle ambient tactical pitch background */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-25 -translate-y-8 pointer-events-none">
+          <PitchArtwork variant="hero" className="w-[850px] max-w-none" opacity={0.3} />
         </div>
 
-        {/* Comparison Engine Launcher */}
-        <section aria-labelledby="compare-heading">
-          <CompareLauncher
-            teams={teamsList}
-            isDemo={isDemo}
-            initialLeftId="liverpool"
-            initialRightId="arsenal"
-          />
-        </section>
+        <div className="max-w-6xl mx-auto relative z-10 space-y-6">
+          {/* Stale Warning Banner if needed */}
+          {isStale && (
+            <div className="p-3 rounded-md bg-amber-950/40 border border-amber-600/30 text-amber-200 text-xs flex items-center gap-2 font-mono">
+              <Info className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>
+                Snapshot fetched at {new Date(snapshot.fetchedAt).toLocaleString()} (&gt;48h old).
+              </span>
+            </div>
+          )}
 
-        {/* Standings Table */}
-        <section aria-labelledby="standings-heading" className="space-y-3">
+          {/* Studio Hero Headline */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded border border-emerald-500/30 bg-emerald-950/20 text-emerald-400 font-mono text-[11px] uppercase tracking-wider mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Premier League Research Studio</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white">
+                Season {snapshot.season.label} Evidence
+              </h1>
+              <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl">
+                Compare club rates side-by-side, filter by venue, and inspect the verified completed games behind every number.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-4 text-xs font-mono text-zinc-400 border border-white/[0.08] bg-[#0c0f14]/80 px-3 py-2 rounded-md shrink-0">
+              <div>
+                <span className="text-zinc-500 block text-[10px] uppercase">Recorded</span>
+                <span className="text-zinc-200 font-semibold">
+                  {snapshot.coverage.completedMatches} / {snapshot.coverage.totalMatches} matches
+                </span>
+              </div>
+              <div className="w-px h-6 bg-white/[0.08]" />
+              <div>
+                <span className="text-zinc-500 block text-[10px] uppercase">Source</span>
+                <span className="text-zinc-200 font-semibold">{snapshot.source}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Near-the-Top Club Picker & Comparison Launcher */}
+          <div className="pt-2">
+            <CompareLauncher
+              teams={teamsList}
+              isDemo={isDemo}
+              initialLeftId="liverpool"
+              initialRightId="arsenal"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Main Studio Body: Standings & Evidence */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full mt-8 space-y-8">
+        {/* League Standings Table */}
+        <section aria-labelledby="standings-heading" className="space-y-2">
           <StandingsTable
             standings={snapshot.standings}
             teams={snapshot.teams}
@@ -115,25 +127,24 @@ export default async function HomePage({ searchParams }: PageProps) {
         </section>
 
         {/* Recent Match Evidence */}
-        <section aria-labelledby="evidence-heading" className="space-y-3">
+        <section aria-labelledby="evidence-heading" className="space-y-2">
           <MatchEvidenceList
             matches={completedMatches}
             teams={snapshot.teams}
             isDemo={isDemo}
             title="Recent Completed Match Evidence"
-            description="Verified completed games recorded in the current season snapshot."
+            description="Verified completed games in the current season snapshot."
           />
         </section>
 
-        {/* Provenance & Manifest Footer */}
-        <footer className="border-t border-white/10 pt-6 text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Provenance Footer */}
+        <footer className="border-t border-white/[0.08] pt-6 text-xs text-zinc-500 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
             <span>{snapshot.attribution}</span>
           </div>
-          <div className="flex items-center gap-1 font-mono text-[11px]">
-            <Calendar className="w-3.5 h-3.5 text-slate-600" />
-            <span>Snapshot fetched: {new Date(snapshot.fetchedAt).toUTCString()}</span>
+          <div className="text-[11px] text-zinc-600">
+            Fetched: {new Date(snapshot.fetchedAt).toUTCString()}
           </div>
         </footer>
       </div>
