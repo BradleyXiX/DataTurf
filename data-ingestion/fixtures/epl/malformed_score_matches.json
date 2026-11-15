@@ -1,0 +1,22 @@
+{
+  "filters": { "season": "2024" },
+  "resultSet": { "count": 1, "first": "2024-08-17", "last": "2024-08-17", "played": 1 },
+  "competition": { "id": 2021, "name": "Premier League", "code": "PL" },
+  "matches": [
+    {
+      "id": 3001,
+      "utcDate": "2024-08-17T11:30:00Z",
+      "status": "FINISHED",
+      "matchday": 1,
+      "lastUpdated": "2024-08-18T09:00:00Z",
+      "homeTeam": { "id": 57, "name": "Arsenal FC", "shortName": "Arsenal", "tla": "ARS", "crest": "https://crests.football-data.org/57.png" },
+      "awayTeam": { "id": 61, "name": "Chelsea FC", "shortName": "Chelsea", "tla": "CHE", "crest": "https://crests.football-data.org/61.png" },
+      "score": {
+        "winner": null,
+        "duration": "REGULAR",
+        "fullTime": { "home": null, "away": null },
+        "halfTime": { "home": null, "away": null }
+      }
+    }
+  ]
+}

@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# snapshots
+/data/snapshots/epl/snapshot.json
+**/snapshot.json
+!**/demo-snapshot.json
+!**/fixtures/**

@@ -1,8 +1,17 @@
 node_modules/
 .env
+.env*
 .env.local
 .env.*.local
 
 .venv/
 env/
 venv/
+__pycache__/
+*.pyc
+
+# DataTurf snapshots: never commit live provider snapshots; only track demo fixtures
+**/data/snapshots/epl/snapshot.json
+**/snapshot.json
+!**/demo-snapshot.json
+!**/fixtures/**
