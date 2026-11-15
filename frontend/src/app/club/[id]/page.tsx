@@ -1,21 +1,21 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { loadEplSnapshot } from '@/lib/epl/loader';
 import { getTeamMetrics, getTeamMatches } from '@/lib/epl/metrics';
 import { DemoBanner } from '@/components/studio/DemoBanner';
 import { UnavailableState } from '@/components/studio/UnavailableState';
 import { StudioNav } from '@/components/studio/StudioNav';
 import { MatchEvidenceList } from '@/components/studio/MatchEvidenceList';
-import { ArrowLeft, Scale, Trophy, Flame } from 'lucide-react';
+import { PitchArtwork } from '@/components/studio/PitchArtwork';
+import { ArrowLeft, ArrowUpRight, Flame, Scale } from 'lucide-react';
 
 interface ClubPageProps {
-  params: Promise<{ id: string }> | { id: string };
-  searchParams?: Promise<{ demo?: string; venue?: string }> | { demo?: string; venue?: string };
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ demo?: string; venue?: string }>;
 }
 
 export default async function ClubPage({ params, searchParams }: ClubPageProps) {
-  const resolvedParams = await Promise.resolve(params);
-  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
 
   const clubId = resolvedParams.id;
   const allowDemo = resolvedSearchParams?.demo === 'true';
@@ -25,11 +25,15 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
 
   if (!snapshot || status !== 'ready') {
     return (
-      <main className="min-h-screen bg-[#0a0c10] text-slate-100 flex flex-col font-sans">
+      <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans">
         <StudioNav currentRoute="club" isDemo={allowDemo} />
-        <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="flex-1 flex items-center justify-center px-4 py-16">
           <UnavailableState
-            reason={error || 'Premier League snapshot is unavailable.'}
+            reason={
+              status === 'demo_rejected'
+                ? 'Demo data was detected at the real snapshot location. Normal routes reject demo data without explicit opt-in.'
+                : error || 'Premier League snapshot is unavailable.'
+            }
             demoUrl={`/club/${clubId}?demo=true`}
           />
         </div>
@@ -38,21 +42,26 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
   }
 
   const team = snapshot.teams[clubId];
+  const querySuffix = isDemo ? '&demo=true' : '';
+
   if (!team) {
     return (
-      <main className="min-h-screen bg-[#0a0c10] text-slate-100 flex flex-col font-sans">
+      <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans">
         <StudioNav currentRoute="club" isDemo={isDemo} />
-        <div className="max-w-2xl mx-auto my-16 p-8 rounded-2xl bg-[#12151c] border border-white/10 text-center">
-          <h2 className="text-xl font-bold text-white mb-2">Club Not Found</h2>
-          <p className="text-sm text-slate-400 mb-6">
-            The club identifier <code className="text-emerald-400 font-mono">"{clubId}"</code> was not found in the current season snapshot.
+        <div className="max-w-xl mx-auto my-16 p-8 rounded-lg border border-white/[0.08] bg-[#0d1015] text-center">
+          <span className="inline-block px-2 py-0.5 rounded border border-rose-500/30 bg-rose-950/20 text-rose-400 font-mono text-[11px] uppercase tracking-wider mb-3">
+            Unknown Club
+          </span>
+          <h2 className="text-xl font-semibold text-white tracking-tight mb-2">Club Not Found</h2>
+          <p className="text-xs text-zinc-400 mb-6 font-mono">
+            Identifier <code className="text-emerald-400">"{clubId}"</code> was not found in the current season snapshot.
           </p>
           <Link
             href={`/${isDemo ? '?demo=true' : ''}`}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/15 text-white text-xs font-mono transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Return to Explore</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Return to League Table</span>
           </Link>
         </div>
       </main>
@@ -61,10 +70,9 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
 
   const metrics = getTeamMetrics(snapshot, clubId, venue);
   const filteredMatches = getTeamMatches(snapshot.matches, clubId, venue, true);
-  const querySuffix = isDemo ? '&demo=true' : '';
 
   return (
-    <main className="min-h-screen bg-[#0a0c10] text-slate-100 flex flex-col font-sans pb-16">
+    <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans pb-16 relative">
       {isDemo && <DemoBanner currentPath={`/club/${clubId}?demo=true`} />}
       <StudioNav
         isDemo={isDemo}
@@ -73,161 +81,190 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
         currentRoute="club"
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full mt-6 space-y-8">
-        {/* Breadcrumb & Navigation */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full mt-6 space-y-6">
+        {/* Navigation Breadcrumb & Quick Actions */}
         <div className="flex items-center justify-between gap-4">
           <Link
             href={`/${isDemo ? '?demo=true' : ''}`}
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-400 hover:text-emerald-400 transition-colors focus:outline-none"
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400 hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 rounded"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to League Standings</span>
+            <span>Back to League Table</span>
           </Link>
 
           <Link
             href={`/compare?season=${snapshot.season.startYear}&left=${clubId}${isDemo ? '&demo=true' : ''}`}
-            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 transition-colors font-medium"
+            className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500"
           >
             <Scale className="w-3.5 h-3.5" />
             <span>Compare {team.shortName}</span>
           </Link>
         </div>
 
-        {/* Club Header Banner */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-[#12151c] to-[#0c0e12] border border-white/10 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            {team.crestUrl ? (
-              <img
-                src={team.crestUrl}
-                alt=""
-                className="w-16 h-16 object-contain shrink-0 drop-shadow-md"
-              />
-            ) : (
-              <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center font-bold font-mono text-xl text-slate-400">
-                {team.tla}
-              </div>
-            )}
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                  {team.name}
-                </h1>
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-white/10 text-slate-300">
-                  {team.tla}
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Premier League Season {snapshot.season.label} Record & Analysis
-              </p>
-            </div>
+        {/* Club Header / Hero Panel with Tactical Pitch Background */}
+        <section
+          aria-labelledby="club-header-title"
+          className="relative rounded-lg border border-white/[0.08] bg-[#0d1015] p-5 sm:p-6 overflow-hidden"
+        >
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-15 pointer-events-none w-96 max-w-none">
+            <PitchArtwork variant="tactical" opacity={0.3} />
           </div>
 
-          {metrics?.standing && (
-            <div className="flex items-center gap-3 font-mono text-center shrink-0">
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 min-w-[70px]">
-                <span className="text-[10px] text-slate-500 uppercase block">Rank</span>
-                <span className="text-xl font-bold text-slate-200">#{metrics.standing.position}</span>
-              </div>
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 min-w-[70px]">
-                <span className="text-[10px] text-emerald-400/80 uppercase block">Points</span>
-                <span className="text-xl font-bold text-emerald-400">{metrics.standing.points}</span>
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              {team.crestUrl ? (
+                <img
+                  src={team.crestUrl}
+                  alt={`${team.name} crest`}
+                  className="w-14 h-14 sm:w-16 sm:h-16 object-contain shrink-0 drop-shadow-sm"
+                />
+              ) : (
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg border border-white/[0.08] bg-white/[0.03] flex items-center justify-center font-bold font-mono text-xl text-zinc-300">
+                  {team.tla}
+                </div>
+              )}
+
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1
+                    id="club-header-title"
+                    className="text-2xl sm:text-3xl font-semibold tracking-tight text-white"
+                  >
+                    {team.name}
+                  </h1>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded border border-white/[0.08] bg-white/[0.04] text-zinc-400">
+                    {team.tla}
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-400 mt-1 font-mono">
+                  Premier League Season {snapshot.season.label} Profile & Match Evidence
+                </p>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Venue Filter Bar */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-mono">
+            {metrics?.standing && (
+              <div className="flex items-center gap-3 font-mono shrink-0">
+                <div className="px-3 py-2 rounded-md border border-white/[0.08] bg-[#080a0d] text-center min-w-[70px]">
+                  <span className="text-[10px] text-zinc-500 uppercase block">Rank</span>
+                  <span className="text-lg font-bold text-zinc-100">#{metrics.standing.position}</span>
+                </div>
+                <div className="px-3 py-2 rounded-md border border-emerald-500/20 bg-emerald-950/20 text-center min-w-[70px]">
+                  <span className="text-[10px] text-emerald-400/80 uppercase block">Points</span>
+                  <span className="text-lg font-bold text-emerald-400">{metrics.standing.points}</span>
+                </div>
+                <div className="px-3 py-2 rounded-md border border-white/[0.08] bg-[#080a0d] text-center min-w-[70px] hidden sm:block">
+                  <span className="text-[10px] text-zinc-500 uppercase block">Played</span>
+                  <span className="text-lg font-bold text-zinc-100">{metrics.standing.playedGames}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Venue Filter Bar with Real-Time Sample Size */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+          <div
+            role="group"
+            aria-label="Filter club record by venue"
+            className="inline-flex items-center gap-1 p-1 rounded-md bg-[#0d1015] border border-white/[0.08] text-xs font-mono"
+          >
             <Link
               href={`/club/${clubId}?venue=all${querySuffix}`}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                venue === 'all' ? 'bg-white/10 text-white font-bold' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
+                venue === 'all' ? 'bg-white/10 text-white font-medium' : 'text-zinc-400 hover:text-white'
               }`}
             >
               All Matches
             </Link>
             <Link
               href={`/club/${clubId}?venue=home${querySuffix}`}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                venue === 'home' ? 'bg-white/10 text-white font-bold' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
+                venue === 'home' ? 'bg-white/10 text-white font-medium' : 'text-zinc-400 hover:text-white'
               }`}
             >
               Home Splits
             </Link>
             <Link
               href={`/club/${clubId}?venue=away${querySuffix}`}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                venue === 'away' ? 'bg-white/10 text-white font-bold' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
+                venue === 'away' ? 'bg-white/10 text-white font-medium' : 'text-zinc-400 hover:text-white'
               }`}
             >
               Away Splits
             </Link>
           </div>
 
-          <span className="text-xs text-slate-400 font-mono hidden sm:inline">
-            Sample: {metrics?.completedMatches.length || 0} completed matches
+          <span className="text-xs font-mono text-zinc-500">
+            Sample size: {metrics?.completedMatches.length || 0} completed matches ({venue.toUpperCase()})
           </span>
         </div>
 
         {/* Verified Computed Metric Cards with Exact Denominators */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-[#12151c]/90 border border-white/10 shadow-lg">
-            <span className="text-xs text-slate-400 font-mono block">Points Per Game</span>
-            <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-              {metrics?.pointsPerGame.available ? metrics.pointsPerGame.value?.toFixed(2) : 'Unavailable'}
+        <section aria-label="Computed Performance Rates" className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
+            <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
+              Points / Game
+            </span>
+            <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
+              {metrics?.pointsPerGame.available ? metrics.pointsPerGame.value?.toFixed(2) : '—'}
             </div>
-            <span className="text-[11px] text-slate-500 font-mono block mt-1">
-              Denominator: {metrics?.pointsPerGame.denominator || 0} completed
+            <span className="text-[11px] font-mono text-zinc-500 block mt-1.5">
+              n = {metrics?.pointsPerGame.denominator || 0} completed
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#12151c]/90 border border-white/10 shadow-lg">
-            <span className="text-xs text-slate-400 font-mono block">Goals Scored / Match</span>
-            <div className="text-2xl font-extrabold text-slate-100 mt-1">
-              {metrics?.goalsScoredPerMatch.available ? metrics.goalsScoredPerMatch.value?.toFixed(2) : 'Unavailable'}
+          <div className="p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
+            <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
+              Goals Scored / Match
+            </span>
+            <div className="text-2xl font-bold font-mono text-zinc-100 mt-1">
+              {metrics?.goalsScoredPerMatch.available ? metrics.goalsScoredPerMatch.value?.toFixed(2) : '—'}
             </div>
-            <span className="text-[11px] text-slate-500 font-mono block mt-1">
-              Denominator: {metrics?.goalsScoredPerMatch.denominator || 0} completed
+            <span className="text-[11px] font-mono text-zinc-500 block mt-1.5">
+              n = {metrics?.goalsScoredPerMatch.denominator || 0} completed
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#12151c]/90 border border-white/10 shadow-lg">
-            <span className="text-xs text-slate-400 font-mono block">Goals Conceded / Match</span>
-            <div className="text-2xl font-extrabold text-slate-100 mt-1">
-              {metrics?.goalsConcededPerMatch.available ? metrics.goalsConcededPerMatch.value?.toFixed(2) : 'Unavailable'}
+          <div className="p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
+            <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
+              Goals Conceded / Match
+            </span>
+            <div className="text-2xl font-bold font-mono text-zinc-100 mt-1">
+              {metrics?.goalsConcededPerMatch.available ? metrics.goalsConcededPerMatch.value?.toFixed(2) : '—'}
             </div>
-            <span className="text-[11px] text-slate-500 font-mono block mt-1">
-              Denominator: {metrics?.goalsConcededPerMatch.denominator || 0} completed
+            <span className="text-[11px] font-mono text-zinc-500 block mt-1.5">
+              n = {metrics?.goalsConcededPerMatch.denominator || 0} completed
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#12151c]/90 border border-white/10 shadow-lg">
-            <span className="text-xs text-slate-400 font-mono block">Clean Sheets</span>
-            <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-              {metrics?.cleanSheets.available ? metrics.cleanSheets.value : 'Unavailable'}
+          <div className="p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
+            <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
+              Clean Sheets
+            </span>
+            <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
+              {metrics?.cleanSheets.available ? metrics.cleanSheets.value : '—'}
             </div>
-            <span className="text-[11px] text-slate-500 font-mono block mt-1">
-              In {metrics?.cleanSheets.denominator || 0} completed games
+            <span className="text-[11px] font-mono text-zinc-500 block mt-1.5">
+              in {metrics?.cleanSheets.denominator || 0} matches
             </span>
           </div>
-        </div>
+        </section>
 
-        {/* Last Five Form Evidence */}
+        {/* Recent Form (Last 5 Completed Matches) */}
         <section aria-labelledby="form-heading" className="space-y-3">
           <div className="flex items-center gap-2">
             <Flame className="w-4 h-4 text-amber-400" />
-            <h3 id="form-heading" className="font-semibold text-slate-200 text-sm tracking-wide">
+            <h2 id="form-heading" className="text-sm font-semibold text-zinc-100 tracking-tight">
               Recent Form (Last 5 Completed Matches)
-            </h3>
+            </h2>
           </div>
           <MatchEvidenceList
             matches={metrics?.lastFiveMatches || []}
             teams={snapshot.teams}
             focusTeamId={clubId}
             isDemo={isDemo}
-            title=""
-            description=""
+            title="Last 5 Outings"
+            description={`Chronological match evidence with ID tiebreaker order.`}
           />
         </section>
 
@@ -239,7 +276,7 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
             focusTeamId={clubId}
             isDemo={isDemo}
             title={`Completed Match Records (${venue.toUpperCase()})`}
-            description={`Every game behind ${team.name}'s statistical profile.`}
+            description={`Every verified game contributing to ${team.name}'s statistical profile.`}
           />
         </section>
       </div>
