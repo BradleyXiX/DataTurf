@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "prebuild": "node ./scripts/generate-snapshot.mjs",
+    "build": "node ./scripts/generate-snapshot.mjs && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test src/lib/epl/__tests__/metrics.test.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

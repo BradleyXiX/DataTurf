@@ -15,9 +15,16 @@ import {
 
 import { loadEplSnapshot, isSnapshotStale, SUPPORTED_SCHEMA_VERSION } from '../loader.ts';
 
-const DEMO_SNAPSHOT_PATH = path.resolve(process.cwd(), 'data/snapshots/epl/demo-snapshot.json');
-const REAL_SNAPSHOT_PATH = path.resolve(process.cwd(), 'data/snapshots/epl/snapshot.json');
-const SCRATCH_DIR = path.resolve(process.cwd(), 'data/snapshots/epl/scratch-tests');
+const isFrontendDir = fs.existsSync(path.resolve(process.cwd(), 'src/lib/epl'));
+const SNAPSHOTS_BASE_DIR = isFrontendDir
+  ? (fs.existsSync(path.resolve(process.cwd(), 'data/snapshots/epl/demo-snapshot.json'))
+      ? path.resolve(process.cwd(), 'data/snapshots/epl')
+      : path.resolve(process.cwd(), '../data/snapshots/epl'))
+  : path.resolve(process.cwd(), 'data/snapshots/epl');
+
+const DEMO_SNAPSHOT_PATH = path.resolve(SNAPSHOTS_BASE_DIR, 'demo-snapshot.json');
+const REAL_SNAPSHOT_PATH = path.resolve(SNAPSHOTS_BASE_DIR, 'snapshot.json');
+const SCRATCH_DIR = path.resolve(SNAPSHOTS_BASE_DIR, 'scratch-tests');
 
 test('EPL Snapshot Loader, Gate Verification & Metrics Suite', async (t) => {
   // Setup scratch test directory for temporary test fixtures
@@ -156,12 +163,13 @@ test('EPL Snapshot Loader, Gate Verification & Metrics Suite', async (t) => {
   });
 
   await t.test('9. Server-only boundary verification: client-side import guard and component isolation', () => {
+    const srcDir = isFrontendDir ? path.resolve(process.cwd(), 'src') : path.resolve(process.cwd(), 'frontend/src');
     // 9a. Verify client-side import guard: if typeof window !== 'undefined', loader code execution throws
-    const loaderCode = fs.readFileSync(path.resolve(process.cwd(), 'frontend/src/lib/epl/loader.ts'), 'utf-8');
+    const loaderCode = fs.readFileSync(path.join(srcDir, 'lib/epl/loader.ts'), 'utf-8');
     assert.match(loaderCode, /if\s*\(typeof window !== 'undefined'\)\s*\{\s*throw new Error/);
 
     // 9b. Verify no client component imports loader.ts
-    const studioComponentsDir = path.resolve(process.cwd(), 'frontend/src/components/studio');
+    const studioComponentsDir = path.join(srcDir, 'components/studio');
     const componentFiles = fs.readdirSync(studioComponentsDir);
     for (const file of componentFiles) {
       if (file.endsWith('.tsx') || file.endsWith('.ts')) {
