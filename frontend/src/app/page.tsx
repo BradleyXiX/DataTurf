@@ -5,7 +5,7 @@ import { StudioNav } from '@/components/studio/StudioNav';
 import { StandingsTable } from '@/components/studio/StandingsTable';
 import { MatchEvidenceList } from '@/components/studio/MatchEvidenceList';
 import { CompareLauncher } from '@/components/studio/CompareLauncher';
-import { PitchArtwork } from '@/components/studio/PitchArtwork';
+import { StadiumSignature } from '@/components/studio/StadiumSignature';
 import { Info } from 'lucide-react';
 
 interface PageProps {
@@ -55,11 +55,11 @@ export default async function HomePage({ searchParams }: PageProps) {
         currentRoute="explore"
       />
 
-      {/* Hero Section with Original Pitch Artwork */}
+      {/* Hero Section with Refined Stadium Signature Moment */}
       <section className="relative border-b border-white/[0.08] overflow-hidden pt-10 pb-8 px-4 sm:px-6">
-        {/* Subtle ambient tactical pitch background */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-25 -translate-y-8 pointer-events-none">
-          <PitchArtwork variant="hero" className="w-[850px] max-w-none" opacity={0.3} />
+        {/* Signature Stadium Visual: static isometric poster with progressive 3D enhancement */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none -translate-y-6 sm:-translate-y-8">
+          <StadiumSignature className="w-[1050px] max-w-none" opacity={0.32} />
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10 space-y-6">
