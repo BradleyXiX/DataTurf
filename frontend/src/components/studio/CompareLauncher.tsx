@@ -74,7 +74,7 @@ export function CompareLauncher({
       >
         <div className="flex flex-col md:flex-row md:items-end gap-3">
           {/* Club A */}
-          <div className="flex-1 min-w-[160px]">
+          <div className="flex-1 min-w-0">
             <label
               htmlFor="select-left-club"
               className="block text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1.5"
@@ -104,7 +104,7 @@ export function CompareLauncher({
           </div>
 
           {/* Club B */}
-          <div className="flex-1 min-w-[160px]">
+          <div className="flex-1 min-w-0">
             <label
               htmlFor="select-right-club"
               className="block text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1.5"
@@ -129,7 +129,7 @@ export function CompareLauncher({
           </div>
 
           {/* Venue */}
-          <div className="w-full md:w-44">
+          <div className="w-full md:w-44 min-w-0">
             <label
               htmlFor="select-venue"
               className="block text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1.5"
@@ -171,21 +171,21 @@ export function CompareLauncher({
             <button
               type="button"
               onClick={() => setMatchup('liverpool', 'arsenal')}
-              className="px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 hover:bg-white/[0.03] text-zinc-300 transition-colors font-mono text-[11px]"
+              className="px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 hover:bg-white/[0.03] text-zinc-300 transition-colors font-mono text-[11px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500"
             >
               Liverpool vs Arsenal
             </button>
             <button
               type="button"
               onClick={() => setMatchup('man-city', 'arsenal')}
-              className="px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 hover:bg-white/[0.03] text-zinc-300 transition-colors font-mono text-[11px]"
+              className="px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 hover:bg-white/[0.03] text-zinc-300 transition-colors font-mono text-[11px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500"
             >
               Man City vs Arsenal
             </button>
             <button
               type="button"
               onClick={() => setMatchup('chelsea', 'liverpool')}
-              className="px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 hover:bg-white/[0.03] text-zinc-300 transition-colors font-mono text-[11px]"
+              className="px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 hover:bg-white/[0.03] text-zinc-300 transition-colors font-mono text-[11px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500"
             >
               Chelsea vs Liverpool
             </button>

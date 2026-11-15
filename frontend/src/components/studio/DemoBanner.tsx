@@ -14,7 +14,7 @@ export function DemoBanner({ currentPath = '/' }: DemoBannerProps) {
   return (
     <div
       role="alert"
-      className="bg-amber-950/80 border-b border-amber-600/40 text-amber-200 px-4 py-2 text-sm flex items-center justify-between gap-3 sticky top-0 z-50 backdrop-blur-md"
+      className="bg-amber-950/80 border-b border-amber-600/40 text-amber-200 px-4 py-2 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 sticky top-0 z-50 backdrop-blur-md"
     >
       <div className="flex items-center gap-2 max-w-4xl mx-auto flex-1">
         <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" aria-hidden="true" />

@@ -28,14 +28,14 @@ export function StandingsTable({ standings, teams, isDemo = false }: StandingsTa
             <tr className="border-b border-white/[0.08] bg-white/[0.015] text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
               <th scope="col" className="py-2 px-3 w-10 text-center">#</th>
               <th scope="col" className="py-2 px-4">Club</th>
-              <th scope="col" className="py-2 px-2.5 text-right w-10">P</th>
-              <th scope="col" className="py-2 px-2.5 text-right w-10">W</th>
-              <th scope="col" className="py-2 px-2.5 text-right w-10">D</th>
-              <th scope="col" className="py-2 px-2.5 text-right w-10">L</th>
-              <th scope="col" className="py-2 px-2.5 text-right w-12 hidden sm:table-cell">GF</th>
-              <th scope="col" className="py-2 px-2.5 text-right w-12 hidden sm:table-cell">GA</th>
-              <th scope="col" className="py-2 px-2.5 text-right w-12">GD</th>
-              <th scope="col" className="py-2 px-3 text-right w-12 font-bold text-zinc-200">Pts</th>
+              <th scope="col" className="py-2 px-2.5 text-right w-10"><abbr title="Played Games" className="no-underline cursor-help">P</abbr></th>
+              <th scope="col" className="py-2 px-2.5 text-right w-10"><abbr title="Won" className="no-underline cursor-help">W</abbr></th>
+              <th scope="col" className="py-2 px-2.5 text-right w-10"><abbr title="Drawn" className="no-underline cursor-help">D</abbr></th>
+              <th scope="col" className="py-2 px-2.5 text-right w-10"><abbr title="Lost" className="no-underline cursor-help">L</abbr></th>
+              <th scope="col" className="py-2 px-2.5 text-right w-12 hidden sm:table-cell"><abbr title="Goals For" className="no-underline cursor-help">GF</abbr></th>
+              <th scope="col" className="py-2 px-2.5 text-right w-12 hidden sm:table-cell"><abbr title="Goals Against" className="no-underline cursor-help">GA</abbr></th>
+              <th scope="col" className="py-2 px-2.5 text-right w-12"><abbr title="Goal Difference" className="no-underline cursor-help">GD</abbr></th>
+              <th scope="col" className="py-2 px-3 text-right w-12 font-bold text-zinc-200"><abbr title="Points" className="no-underline cursor-help">Pts</abbr></th>
               <th scope="col" className="py-2 px-4 text-right w-24">Action</th>
             </tr>
           </thead>
@@ -56,7 +56,7 @@ export function StandingsTable({ standings, teams, isDemo = false }: StandingsTa
                   <td className="py-2.5 px-4 font-sans font-medium text-zinc-200">
                     <Link
                       href={`/club/${row.teamId}${querySuffix}`}
-                      className="inline-flex items-center gap-2.5 hover:text-emerald-400 transition-colors focus:outline-none focus:underline"
+                      className="inline-flex items-center gap-2.5 hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 rounded py-0.5"
                     >
                       {team?.crestUrl && (
                         <img
@@ -88,7 +88,7 @@ export function StandingsTable({ standings, teams, isDemo = false }: StandingsTa
                   <td className="py-2.5 px-4 text-right font-sans">
                     <Link
                       href={`/compare${querySuffix ? `${querySuffix}&` : '?'}left=${row.teamId}`}
-                      className="text-xs text-zinc-400 hover:text-emerald-400 px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 transition-colors inline-block"
+                      className="text-xs text-zinc-400 hover:text-emerald-400 px-2 py-0.5 rounded border border-white/[0.08] hover:border-emerald-500/40 transition-colors inline-block focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500"
                       title={`Compare ${shortName}`}
                     >
                       Compare

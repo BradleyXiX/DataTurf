@@ -46,7 +46,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     .reverse();
 
   return (
-    <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans pb-16 relative">
+    <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans pb-16 relative overflow-x-clip">
       {isDemo && <DemoBanner currentPath="/?demo=true" />}
       <StudioNav
         isDemo={isDemo}

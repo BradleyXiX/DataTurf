@@ -72,7 +72,7 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
   const filteredMatches = getTeamMatches(snapshot.matches, clubId, venue, true);
 
   return (
-    <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans pb-16 relative">
+    <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans pb-16 relative overflow-x-clip">
       {isDemo && <DemoBanner currentPath={`/club/${clubId}?demo=true`} />}
       <StudioNav
         isDemo={isDemo}
@@ -166,7 +166,7 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
           <div
             role="group"
             aria-label="Filter club record by venue"
-            className="inline-flex items-center gap-1 p-1 rounded-md bg-[#0d1015] border border-white/[0.08] text-xs font-mono"
+            className="inline-flex flex-wrap items-center gap-1 p-1 rounded-md bg-[#0d1015] border border-white/[0.08] text-xs font-mono"
           >
             <Link
               href={`/club/${clubId}?venue=all${querySuffix}`}
@@ -200,8 +200,8 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
         </div>
 
         {/* Verified Computed Metric Cards with Exact Denominators */}
-        <section aria-label="Computed Performance Rates" className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
+        <section aria-label="Computed Performance Rates" className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
+          <div className="p-3 sm:p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
             <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
               Points / Game
             </span>
@@ -213,7 +213,7 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
             </span>
           </div>
 
-          <div className="p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
+          <div className="p-3 sm:p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
             <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
               Goals Scored / Match
             </span>
@@ -225,7 +225,7 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
             </span>
           </div>
 
-          <div className="p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
+          <div className="p-3 sm:p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
             <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
               Goals Conceded / Match
             </span>
@@ -237,7 +237,7 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
             </span>
           </div>
 
-          <div className="p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
+          <div className="p-3 sm:p-4 rounded-lg border border-white/[0.08] bg-[#0d1015]">
             <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block">
               Clean Sheets
             </span>

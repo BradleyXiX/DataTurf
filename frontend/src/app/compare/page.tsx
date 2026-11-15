@@ -56,7 +56,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   const querySuffix = isDemo ? '&demo=true' : '';
 
   return (
-    <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans pb-16 relative">
+    <main className="min-h-screen bg-[#080a0d] text-zinc-100 flex flex-col font-sans pb-16 relative overflow-x-clip">
       {isDemo && (
         <DemoBanner
           currentPath={`/compare?season=2024&left=${leftId}&right=${rightId}&venue=${venue}&demo=true`}
@@ -189,10 +189,14 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
               </div>
 
               {/* Venue Switcher Tabs */}
-              <div className="flex items-center gap-1 bg-[#13171f] p-1 rounded-md border border-white/[0.08] self-start sm:self-auto font-mono text-xs">
+              <div
+                role="group"
+                aria-label="Filter comparison by venue"
+                className="flex flex-wrap items-center gap-1 bg-[#13171f] p-1 rounded-md border border-white/[0.08] self-start sm:self-auto font-mono text-xs"
+              >
                 <Link
                   href={`/compare?season=2024&left=${leftId}&right=${rightId}&venue=all${querySuffix}`}
-                  className={`px-3 py-1 rounded transition-colors ${
+                  className={`px-3 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
                     venue === 'all'
                       ? 'bg-emerald-600 text-white font-medium'
                       : 'text-zinc-400 hover:text-zinc-200'
@@ -202,7 +206,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                 </Link>
                 <Link
                   href={`/compare?season=2024&left=${leftId}&right=${rightId}&venue=home${querySuffix}`}
-                  className={`px-3 py-1 rounded transition-colors ${
+                  className={`px-3 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
                     venue === 'home'
                       ? 'bg-emerald-600 text-white font-medium'
                       : 'text-zinc-400 hover:text-zinc-200'
@@ -212,7 +216,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                 </Link>
                 <Link
                   href={`/compare?season=2024&left=${leftId}&right=${rightId}&venue=away${querySuffix}`}
-                  className={`px-3 py-1 rounded transition-colors ${
+                  className={`px-3 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
                     venue === 'away'
                       ? 'bg-emerald-600 text-white font-medium'
                       : 'text-zinc-400 hover:text-zinc-200'
@@ -225,7 +229,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
             {/* Shared Metric Comparison Table */}
             <div className="w-full rounded-lg border border-white/[0.08] bg-[#0d1015] overflow-hidden">
-              <table className="w-full text-left border-collapse" aria-label="Club Metric Comparison Table">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[480px]" aria-label="Club Metric Comparison Table">
                 <thead>
                   <tr className="border-b border-white/[0.08] bg-white/[0.015] text-[11px] font-mono uppercase tracking-wider text-zinc-400">
                     <th scope="col" className="py-2.5 px-4 text-left w-2/5">
@@ -484,6 +489,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                 </tbody>
               </table>
             </div>
+          </div>
 
             {/* Contributing Matches Directly Below */}
             <div className="space-y-6 pt-2">
