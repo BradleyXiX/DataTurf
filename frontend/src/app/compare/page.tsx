@@ -8,6 +8,7 @@ import { loadEplSnapshot } from '@/lib/epl/loader';
 import { compareClubs, type VenueFilter } from '@/lib/epl/metrics';
 import type { EplMatch, EplTeam, MetricResult, TeamMetrics } from '@/lib/epl/types';
 
+import { VenueLinkStatus } from './VenueLinkStatus';
 import styles from './compare.module.css';
 
 interface ComparePageProps {
@@ -193,7 +194,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                 initialLeftId={leftId}
                 initialRightId={rightId}
                 initialVenue={venue}
-                key={JSON.stringify([leftId, rightId, venue])}
+                followAppliedFilters
               />
             </section>
 
@@ -218,6 +219,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                         scroll={false}
                       >
                         {label}
+                        <VenueLinkStatus />
                       </Link>
                     ))}
                   </div>
