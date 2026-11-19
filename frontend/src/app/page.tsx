@@ -6,7 +6,13 @@ import { StandingsTable } from '@/components/studio/StandingsTable';
 import { MatchEvidenceList } from '@/components/studio/MatchEvidenceList';
 import { CompareLauncher } from '@/components/studio/CompareLauncher';
 import { StadiumSignature } from '@/components/studio/StadiumSignature';
-import { Info } from 'lucide-react';
+
+
+const snapshotDate = new Intl.DateTimeFormat('en-GB', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'UTC',
+});
 
 interface PageProps {
   searchParams?: Promise<{ demo?: string }>;
@@ -39,6 +45,8 @@ export default async function HomePage({ searchParams }: PageProps) {
     );
   }
 
+  const importedAt = snapshot.fetchedAt ? new Date(snapshot.fetchedAt) : null;
+  const validImportTime = importedAt !== null && Number.isFinite(importedAt.getTime());
   const teamsList = Object.values(snapshot.teams);
   const completedMatches = snapshot.matches
     .filter((m) => m.status === 'COMPLETED')
@@ -63,44 +71,46 @@ export default async function HomePage({ searchParams }: PageProps) {
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10 space-y-6">
-          {/* Stale Warning Banner if needed */}
-          {isStale && (
-            <div className="p-3 rounded-md bg-amber-950/40 border border-amber-600/30 text-amber-200 text-xs flex items-center gap-2 font-mono">
-              <Info className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>
-                Snapshot fetched at {new Date(snapshot.fetchedAt).toLocaleString()} (&gt;48h old).
-              </span>
-            </div>
-          )}
-
-          {/* Studio Hero Headline */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_17rem] md:items-end lg:gap-12">
             <div>
-              <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded border border-emerald-500/30 bg-emerald-950/20 text-emerald-400 font-mono text-[11px] uppercase tracking-wider mb-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span>Premier League Research Studio</span>
-              </div>
+              <p className="mb-2 flex items-center gap-2.5 text-sm font-medium tracking-wide text-zinc-300">
+                <span aria-hidden="true" className="h-px w-5 bg-emerald-400/70" />
+                {snapshot.competition.name}
+              </p>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white">
                 Season {snapshot.season.label} Evidence
               </h1>
-              <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl">
+              <p className="mt-2 max-w-xl text-sm text-zinc-300">
                 Compare club rates side-by-side, filter by venue, and inspect the verified completed games behind every number.
               </p>
             </div>
 
-            <div className="flex items-center gap-4 text-xs font-mono text-zinc-400 border border-white/[0.08] bg-[#0c0f14]/80 px-3 py-2 rounded-md shrink-0">
-              <div>
-                <span className="text-zinc-500 block text-[10px] uppercase">Recorded</span>
-                <span className="text-zinc-200 font-semibold">
+            <section aria-labelledby="snapshot-record-heading" className="min-w-0 border-y border-white/15 py-2.5">
+              <h2 id="snapshot-record-heading" className="mb-1.5 text-sm font-semibold text-zinc-100">
+                Snapshot record
+              </h2>
+              <dl className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1.5 text-sm">
+                <dt className="text-zinc-400">Coverage</dt>
+                <dd className="font-mono text-xs text-zinc-200">
                   {snapshot.coverage.completedMatches} / {snapshot.coverage.totalMatches} matches
-                </span>
-              </div>
-              <div className="w-px h-6 bg-white/[0.08]" />
-              <div>
-                <span className="text-zinc-500 block text-[10px] uppercase">Source</span>
-                <span className="text-zinc-200 font-semibold">{snapshot.source}</span>
-              </div>
-            </div>
+                </dd>
+                <dt className="text-zinc-400">Source</dt>
+                <dd className="break-words text-zinc-200">{isDemo ? 'Demo fixtures' : snapshot.source}</dd>
+                <dt className="text-zinc-400">Imported</dt>
+                <dd className="text-zinc-200">
+                  {validImportTime ? (
+                    <time dateTime={importedAt.toISOString()} className="font-mono text-xs">
+                      {snapshotDate.format(importedAt)} UTC
+                    </time>
+                  ) : 'Time unavailable'}
+                  {isStale && (
+                    <span className="block text-sm font-medium text-amber-200">
+                      {validImportTime ? 'Snapshot over 48 hours old' : 'Snapshot freshness unknown'}
+                    </span>
+                  )}
+                </dd>
+              </dl>
+            </section>
           </div>
 
           {/* Near-the-Top Club Picker & Comparison Launcher */}
@@ -137,15 +147,8 @@ export default async function HomePage({ searchParams }: PageProps) {
           />
         </section>
 
-        {/* Provenance Footer */}
-        <footer className="border-t border-white/[0.08] pt-6 text-xs text-zinc-500 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
-            <span>{snapshot.attribution}</span>
-          </div>
-          <div className="text-[11px] text-zinc-600">
-            Fetched: {new Date(snapshot.fetchedAt).toUTCString()}
-          </div>
+        <footer className="border-t border-white/[0.08] pt-4 text-xs text-zinc-400">
+          {snapshot.attribution}
         </footer>
       </div>
     </main>
