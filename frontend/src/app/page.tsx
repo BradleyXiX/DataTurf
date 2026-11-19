@@ -60,7 +60,6 @@ export default async function HomePage({ searchParams }: PageProps) {
       <StudioNav
         isDemo={isDemo}
         seasonLabel={snapshot.season.label}
-        sourceAttribution={snapshot.attribution}
         currentRoute="explore"
       />
 

@@ -22,17 +22,7 @@
   outline-offset: 3px;
 }
 
-.nav > header {
-  position: static;
-  background: var(--inset);
-  border-color: var(--line);
-  backdrop-filter: none;
-}
 
-.desk .demo > div {
-  position: static;
-  backdrop-filter: none;
-}
 
 .shell {
   width: min(100% - 3rem, 75rem);
@@ -117,9 +107,7 @@
 }
 
 .filters label,
-.filters form > div > span,
-.filters :global(.text-zinc-500),
-.nav :global(.text-zinc-500) {
+.filters form > div > span {
   color: var(--muted);
 }
 
@@ -397,15 +385,21 @@
 @media (max-width: 36rem) {
   .shell { width: calc(100% - 1.5rem); }
 
-  .demo > div > div {
+  .filters [data-matchup-presets] {
     display: grid;
-    grid-template-columns: 1rem minmax(0, 1fr);
-    row-gap: 0.16rem;
-    margin-inline: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .25rem .5rem;
+  }
+  .filters [data-matchup-presets] > span { grid-column: 1 / -1; }
+  .filters [data-matchup-presets] button {
+    min-width: 0;
+    text-align: left;
+    font-family: var(--font-sans);
+    font-size: .75rem;
+    overflow-wrap: anywhere;
   }
 
-  .demo > div > div > span:last-child { grid-column: 2; }
-  .demo > div > a { margin-inline-start: 1.5rem; }
+
 
   .workspace { gap: 1.75rem; }
 

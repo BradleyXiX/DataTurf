@@ -15,8 +15,6 @@
   outline: 2px solid var(--pitch);
   outline-offset: 3px;
 }
-.nav > header, .demo > div { position: static; backdrop-filter: none; }
-.nav > header { background: #141a16; border-color: var(--line); }
 .shell { width: min(100% - 3rem, 75rem); margin-inline: auto; padding-block: 1.2rem 3.5rem; }
 .textLink {
   display: inline-flex;
@@ -138,9 +136,6 @@
   .venues a { flex: 1 1 5rem; padding-inline: .3rem; }
   .ledger li { grid-template-columns: minmax(0, 1fr) minmax(2.75rem, auto) minmax(2.75rem, auto); }
   .fixtureDate { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .3rem .7rem; }
-  .demo > div > div { display: grid; grid-template-columns: 1rem minmax(0, 1fr); row-gap: .2rem; margin-inline: 0; }
-  .demo > div > div > span:last-child { grid-column: 2; }
-  .demo > div > a { margin-inline-start: 1.5rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .venues a { transition: none; }

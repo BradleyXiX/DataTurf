@@ -104,13 +104,10 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
 
   return (
     <main className={styles.report}>
-      {ready && isDemo && <div className={styles.demo}><DemoBanner currentPath={clubVenue(venue, true)} /></div>}
-      <div className={styles.nav}>
-        <StudioNav currentRoute="club" isDemo={ready ? isDemo : allowDemo}
-          seasonLabel={ready ? snapshot.season.label : undefined}
-          sourceAttribution={ready ? snapshot.attribution : undefined}
-        />
-      </div>
+      {ready && isDemo && <DemoBanner currentPath={clubVenue(venue, true)} />}
+      <StudioNav currentRoute="club" isDemo={ready ? isDemo : allowDemo}
+        seasonLabel={ready ? snapshot.season.label : undefined}
+      />
       <div className={styles.shell}>
         <Link href={explore} className={styles.textLink}>
           <ArrowLeft size={15} aria-hidden="true" /> League table

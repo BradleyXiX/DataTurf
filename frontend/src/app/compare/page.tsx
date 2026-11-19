@@ -162,15 +162,12 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
   return (
     <main className={styles.desk}>
-      {isReady && isDemo && <div className={styles.demo}><DemoBanner currentPath={demoUrl} /></div>}
-      <div className={styles.nav}>
-        <StudioNav
-          currentRoute="compare"
-          isDemo={isReady ? isDemo : allowDemo}
-          seasonLabel={isReady ? snapshot.season.label : undefined}
-          sourceAttribution={isReady ? snapshot.attribution : undefined}
-        />
-      </div>
+      {isReady && isDemo && <DemoBanner currentPath={demoUrl} />}
+      <StudioNav
+        currentRoute="compare"
+        isDemo={isReady ? isDemo : allowDemo}
+        seasonLabel={isReady ? snapshot.season.label : undefined}
+      />
 
       <div className={styles.shell}>
         <div className={styles.intro}>
@@ -184,7 +181,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
         {!isReady ? (
           <div className={styles.unavailable}>
-            <UnavailableState
+            <UnavailableState headingLevel="h2"
               reason={error || 'Premier League snapshot is unavailable for comparison.'}
               demoUrl={demoUrl}
             />

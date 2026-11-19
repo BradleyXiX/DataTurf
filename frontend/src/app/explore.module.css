@@ -102,7 +102,7 @@
 
 .matchup {
   padding-top: 1.35rem;
-  scroll-margin-top: 8.5rem;
+  scroll-margin-top: 1.25rem;
 }
 
 .matchupHeader {
@@ -139,7 +139,6 @@
   .hero, .matchupHeader { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .title { font-size: clamp(2.55rem, 10vw, 4.25rem); }
   .handoff { margin-inline-end: 32%; }
-  .matchup { scroll-margin-top: 11rem; }
   .matchupHeader { margin-bottom: 1.2rem; }
 }
 
