@@ -7,8 +7,8 @@
   --color-surface: rgba(20, 20, 20, 0.4);
   --color-surface-hover: rgba(30, 30, 30, 0.6);
   --color-border: rgba(255, 255, 255, 0.08);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-geist-mono), ui-serif, Georgia, serif;
+  --font-sans: var(--font-saira), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-chivo-mono), ui-monospace, monospace;
 }
 
 :root {
@@ -21,6 +21,11 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Keep changing scores, counts and metrics aligned inside existing data UI. */
+.font-mono {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Glassmorphism - Micro-details */

@@ -4,7 +4,7 @@ DataTurf is a football research portfolio piece. A client should be able to pick
 
 ## Visual direction
 
-Use the visual structure of a football broadcast and a scouting report. Keep the original Blender stadium as the one large visual on Explore. Use the same charcoal, warm white, pitch green and Geist palette from the prototype. Keep green for primary actions and active selections. Reserve amber for genuine data warnings. Keep the preview mode selector in the experiment only.
+Use the visual structure of a football broadcast and a scouting report. Keep the original Blender stadium as the one large visual on Explore. Keep the charcoal, warm white and pitch green from the prototype. Use Saira for headings and interface copy, and Chivo Mono with tabular digits for scores, metrics and compact data labels. Both fonts are self-hosted variable WOFF2 files under the SIL Open Font License. Keep green for primary actions and active selections. Reserve amber for genuine data warnings. Keep the preview mode selector in the experiment only.
 
 The design review used Web UI Studio as the primary workflow and the Redesign Existing Projects skill to diagnose generic patterns. Repeated equal-weight cards, heavy rounding, and a hero treated as a boxed feature all weaken hierarchy. Apply the changes below in the corresponding implementation commits.
 
