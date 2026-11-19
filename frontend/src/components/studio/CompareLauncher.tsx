@@ -116,7 +116,7 @@ export function CompareLauncher({
           </div>
 
           {/* VS Divider on desktop */}
-          <div className="hidden md:flex items-center justify-center pb-2.5 text-zinc-500 text-xs font-mono">
+          <div className="hidden md:flex items-center justify-center pb-2.5 text-zinc-400 text-xs font-mono">
             vs
           </div>
 
@@ -184,8 +184,8 @@ export function CompareLauncher({
 
         {/* Quick Matchup Presets */}
         {!compact && (
-          <div className="mt-3.5 pt-3 border-t border-white/[0.06] flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-zinc-500 font-mono text-[11px]">Quick Matchups:</span>
+          <div data-matchup-presets className="mt-3.5 pt-3 border-t border-white/[0.06] flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-zinc-400 font-mono text-[11px]">Quick Matchups:</span>
             <button
               type="button"
               onClick={() => setMatchup('liverpool', 'arsenal')}

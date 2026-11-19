@@ -17,7 +17,7 @@ export function StandingsTable({ standings, teams, isDemo = false }: StandingsTa
         <h2 className="text-sm font-semibold text-zinc-100 tracking-tight">
           League Table
         </h2>
-        <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+        <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
           Official Standings
         </span>
       </div>
@@ -50,7 +50,7 @@ export function StandingsTable({ standings, teams, isDemo = false }: StandingsTa
                   key={row.teamId}
                   className="hover:bg-white/[0.025] transition-colors group"
                 >
-                  <td className="py-2.5 px-3 text-center text-zinc-500 font-medium">
+                  <td className="py-2.5 px-3 text-center text-zinc-400 font-medium">
                     {row.position}
                   </td>
                   <td className="py-2.5 px-4 font-sans font-medium text-zinc-200">
@@ -68,7 +68,7 @@ export function StandingsTable({ standings, teams, isDemo = false }: StandingsTa
                         />
                       )}
                       <span>{shortName}</span>
-                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 text-zinc-500 transition-opacity" />
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 text-zinc-400 transition-opacity" />
                     </Link>
                   </td>
                   <td className="py-2.5 px-2.5 text-right text-zinc-300">{row.playedGames}</td>
