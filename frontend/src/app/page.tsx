@@ -6,6 +6,7 @@ import { StandingsTable } from '@/components/studio/StandingsTable';
 import { MatchEvidenceList } from '@/components/studio/MatchEvidenceList';
 import { CompareLauncher } from '@/components/studio/CompareLauncher';
 import { StadiumSignature } from '@/components/studio/StadiumSignature';
+import styles from './explore.module.css';
 
 
 const snapshotDate = new Intl.DateTimeFormat('en-GB', {
@@ -63,65 +64,60 @@ export default async function HomePage({ searchParams }: PageProps) {
         currentRoute="explore"
       />
 
-      {/* Hero Section with Refined Stadium Signature Moment */}
-      <section className="relative border-b border-white/[0.08] overflow-hidden pt-10 pb-8 px-4 sm:px-6">
-        {/* Signature Stadium Visual: static isometric poster with progressive 3D enhancement */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none -translate-y-6 sm:-translate-y-8">
-          <StadiumSignature className="w-[1050px] max-w-none" opacity={0.32} />
-        </div>
-
-        <div className="max-w-6xl mx-auto relative z-10 space-y-6">
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_17rem] md:items-end lg:gap-12">
-            <div>
-              <p className="mb-2 flex items-center gap-2.5 text-sm font-medium tracking-wide text-zinc-300">
-                <span aria-hidden="true" className="h-px w-5 bg-emerald-400/70" />
-                {snapshot.competition.name}
+      <section id="explore-opening" aria-labelledby="explore-title" className={styles.opening}>
+        <div className={styles.shell}>
+          <div className={styles.hero}>
+            <div className={styles.copy}>
+              <p className={styles.competition}>{snapshot.competition.name}</p>
+              <h1 id="explore-title" className={styles.title}>Every number has a match.</h1>
+              <p className={styles.intro}>
+                Compare clubs, filter by venue, and see the matches behind each metric.
               </p>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white">
-                Season {snapshot.season.label} Evidence
-              </h1>
-              <p className="mt-2 max-w-xl text-sm text-zinc-300">
-                Compare club rates side-by-side, filter by venue, and inspect the verified completed games behind every number.
-              </p>
+              <a className={styles.jump} href="#matchup">
+                Compare clubs <span aria-hidden="true">↓</span>
+              </a>
             </div>
-
-            <section aria-labelledby="snapshot-record-heading" className="min-w-0 border-y border-white/15 py-2.5">
-              <h2 id="snapshot-record-heading" className="mb-1.5 text-sm font-semibold text-zinc-100">
-                Snapshot record
-              </h2>
-              <dl className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1.5 text-sm">
-                <dt className="text-zinc-400">Coverage</dt>
-                <dd className="font-mono text-xs text-zinc-200">
-                  {snapshot.coverage.completedMatches} / {snapshot.coverage.totalMatches} matches
-                </dd>
-                <dt className="text-zinc-400">Source</dt>
-                <dd className="break-words text-zinc-200">{isDemo ? 'Demo fixtures' : snapshot.source}</dd>
-                <dt className="text-zinc-400">Imported</dt>
-                <dd className="text-zinc-200">
-                  {validImportTime ? (
-                    <time dateTime={importedAt.toISOString()} className="font-mono text-xs">
-                      {snapshotDate.format(importedAt)} UTC
-                    </time>
-                  ) : 'Time unavailable'}
-                  {isStale && (
-                    <span className="block text-sm font-medium text-amber-200">
-                      {validImportTime ? 'Snapshot over 48 hours old' : 'Snapshot freshness unknown'}
-                    </span>
-                  )}
-                </dd>
-              </dl>
-            </section>
+            <StadiumSignature />
           </div>
 
-          {/* Near-the-Top Club Picker & Comparison Launcher */}
-          <div className="pt-2">
+          <div className={styles.handoff} aria-hidden="true"><span /></div>
+
+          <section id="matchup" aria-labelledby="matchup-heading" className={styles.matchup}>
+            <div className={styles.matchupHeader}>
+              <div>
+                <h2 id="matchup-heading" className={styles.matchupTitle}>Build a matchup</h2>
+                <p className={styles.season}>{snapshot.competition.name} · {snapshot.season.label}</p>
+              </div>
+              <section aria-labelledby="snapshot-record-heading" className={styles.record}>
+                <h3 id="snapshot-record-heading" className={styles.recordTitle}>Snapshot record</h3>
+                <dl>
+                  <dt>Coverage</dt>
+                  <dd className="font-mono">{snapshot.coverage.completedMatches} / {snapshot.coverage.totalMatches} matches</dd>
+                  <dt>Source</dt>
+                  <dd>{isDemo ? 'Demo fixtures' : snapshot.source}</dd>
+                  <dt>Imported</dt>
+                  <dd>
+                    {validImportTime ? (
+                      <time dateTime={importedAt.toISOString()} className="font-mono">
+                        {snapshotDate.format(importedAt)} UTC
+                      </time>
+                    ) : 'Time unavailable'}
+                    {isStale && (
+                      <span className={styles.freshness}>
+                        {validImportTime ? 'Snapshot over 48 hours old' : 'Snapshot freshness unknown'}
+                      </span>
+                    )}
+                  </dd>
+                </dl>
+              </section>
+            </div>
             <CompareLauncher
               teams={teamsList}
               isDemo={isDemo}
               initialLeftId="liverpool"
               initialRightId="arsenal"
             />
-          </div>
+          </section>
         </div>
       </section>
 
