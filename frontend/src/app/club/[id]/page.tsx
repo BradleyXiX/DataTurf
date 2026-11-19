@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { DemoBanner } from '@/components/studio/DemoBanner';
 import { StudioNav } from '@/components/studio/StudioNav';
 import { UnavailableState } from '@/components/studio/UnavailableState';
+import { VenueLinkStatus } from '@/components/studio/VenueLinkStatus';
 import { loadEplSnapshot } from '@/lib/epl/loader';
 import { getTeamMetrics, type VenueFilter } from '@/lib/epl/metrics';
 import type { EplMatch, EplTeam } from '@/lib/epl/types';
@@ -10,7 +11,12 @@ import styles from './club.module.css';
 
 interface ClubPageProps {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ demo?: string | string[]; venue?: string | string[] }>;
+  searchParams?: Promise<{
+    demo?: string | string[];
+    venue?: string | string[];
+    opponent?: string | string[];
+    side?: string | string[];
+  }>;
 }
 
 const venues = [
@@ -68,15 +74,25 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
 
   const explore = routed('/', demo);
   const current = clubPath(clubId);
+  const requestedOpponent = typeof query?.opponent === 'string' && query.opponent !== clubId
+    ? query.opponent
+    : null;
+  const contextOpponent = ready && requestedOpponent && Object.hasOwn(snapshot.teams, requestedOpponent)
+    ? snapshot.teams[requestedOpponent]
+    : null;
+  const compareOnRight = contextOpponent !== null && query?.side === 'right';
+  const context: Record<string, string> = contextOpponent
+    ? { opponent: contextOpponent.id, ...(compareOnRight ? { side: 'right' } : {}) }
+    : {};
   const clubVenue = (value: VenueFilter, demoEnabled: boolean) =>
-    routed(current, demoEnabled ? { venue: value, demo: 'true' } : { venue: value });
+    routed(current, { ...context, venue: value, ...(demoEnabled ? { demo: 'true' } : {}) });
 
-  const defaultOpponent = Object.keys(snapshot?.teams ?? {}).find((id) => id !== clubId);
-  const compare = snapshot && team && defaultOpponent
+  const opponent = contextOpponent?.id ?? Object.keys(snapshot?.teams ?? {}).find((id) => id !== clubId);
+  const compare = snapshot && team && opponent
     ? routed('/compare', {
         season: String(snapshot.season.startYear),
-        left: team.id,
-        right: defaultOpponent,
+        left: compareOnRight ? opponent : team.id,
+        right: compareOnRight ? team.id : opponent,
         venue,
         ...(isDemo ? { demo: 'true' } : {}),
       })
@@ -102,7 +118,12 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
 
         {!ready ? (
           <div className={styles.unavailable}>
-            <UnavailableState reason={error || 'Premier League snapshot is unavailable.'} demoUrl={clubVenue(venue, true)} />
+            <UnavailableState reason={error || 'Premier League snapshot is unavailable.'} demoUrl={routed(current, {
+              ...(requestedOpponent ? { opponent: requestedOpponent } : {}),
+              ...(requestedOpponent && query?.side === 'right' ? { side: 'right' } : {}),
+              venue,
+              demo: 'true',
+            })} />
           </div>
         ) : !team || !metrics ? (
           <section className={styles.selection} aria-labelledby="club-title">
@@ -115,7 +136,12 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
               <div>
                 <p className={styles.competition}>{snapshot.competition.name} · {snapshot.season.label}</p>
                 <h1 id="club-title">{team.name}</h1>
-                {compare && <Link className={styles.textLink} href={compare}>Compare {team.shortName} <ArrowUpRight size={15} aria-hidden="true" /></Link>}
+                {compare && (
+                  <Link className={styles.textLink} href={compare}>
+                    {contextOpponent ? `Compare with ${contextOpponent.shortName}` : `Compare ${team.shortName}`}
+                    <ArrowUpRight size={15} aria-hidden="true" />
+                  </Link>
+                )}
               </div>
               <div className={styles.identity}>
                 <span className={styles.mark} aria-hidden="true">{team.tla}</span>
@@ -132,7 +158,10 @@ export default async function ClubPage({ params, searchParams }: ClubPageProps) 
             <div className={styles.filters}>
               <nav className={styles.venues} aria-label="Filter club record by venue">
                 {venues.map(({ value, label }) => (
-                  <Link key={value} href={clubVenue(value, isDemo)} scroll={false} aria-current={venue === value ? 'true' : undefined}>{label}</Link>
+                  <Link key={value} href={clubVenue(value, isDemo)} scroll={false} aria-current={venue === value ? 'true' : undefined}>
+                    {label}
+                    <VenueLinkStatus />
+                  </Link>
                 ))}
               </nav>
               <p className={styles.sample}>{venueLabel} · {matches.length} completed {matches.length === 1 ? 'match' : 'matches'}</p>

@@ -8,7 +8,7 @@ import { loadEplSnapshot } from '@/lib/epl/loader';
 import { compareClubs, type VenueFilter } from '@/lib/epl/metrics';
 import type { EplMatch, EplTeam, MetricResult, TeamMetrics } from '@/lib/epl/types';
 
-import { VenueLinkStatus } from './VenueLinkStatus';
+import { VenueLinkStatus } from '@/components/studio/VenueLinkStatus';
 import styles from './compare.module.css';
 
 interface ComparePageProps {
@@ -37,15 +37,20 @@ function matchCount(count: number) {
   return `${count} ${count === 1 ? 'match' : 'matches'}`;
 }
 
-function ClubHeading({ club, side, clubSuffix }: {
+function ClubHeading({ club, side, opponentId, venue, isDemo }: {
   club: TeamMetrics;
   side: 'A' | 'B';
-  clubSuffix: string;
+  opponentId: string;
+  venue: VenueFilter;
+  isDemo: boolean;
 }) {
+  const query = new URLSearchParams({ opponent: opponentId, venue });
+  if (side === 'B') query.set('side', 'right');
+  if (isDemo) query.set('demo', 'true');
   return (
     <th scope="col" className={side === 'A' ? styles.clubA : styles.clubB}>
       <span className={styles.clubLabel}>Club {side} <span aria-hidden="true">/</span> {club.team.tla}</span>
-      <Link className={styles.clubName} href={`/club/${club.team.id}${clubSuffix}`}>
+      <Link className={styles.clubName} href={`/club/${encodeURIComponent(club.team.id)}?${query}`}>
         {club.team.name}
       </Link>
       <span className={styles.sample}>{matchCount(club.completedMatches.length)} in sample</span>
@@ -228,8 +233,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                     <thead>
                       <tr>
                         <th scope="col" className={styles.metricHeading}>Metric</th>
-                        <ClubHeading club={comparison.left} side="A" clubSuffix={clubSuffix} />
-                        <ClubHeading club={comparison.right} side="B" clubSuffix={clubSuffix} />
+                        <ClubHeading club={comparison.left} side="A" opponentId={comparison.right.team.id} venue={venue} isDemo={isDemo} />
+                        <ClubHeading club={comparison.right} side="B" opponentId={comparison.left.team.id} venue={venue} isDemo={isDemo} />
                       </tr>
                     </thead>
                     <tbody>
