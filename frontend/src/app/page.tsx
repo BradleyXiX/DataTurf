@@ -6,6 +6,7 @@ import { StandingsTable } from '@/components/studio/StandingsTable';
 import { MatchEvidenceList } from '@/components/studio/MatchEvidenceList';
 import { CompareLauncher } from '@/components/studio/CompareLauncher';
 import { StadiumSignature } from '@/components/studio/StadiumSignature';
+import { FixtureTrace } from '@/components/studio/FixtureTrace';
 import styles from './explore.module.css';
 
 
@@ -79,7 +80,7 @@ export default async function HomePage({ searchParams }: PageProps) {
             <StadiumSignature />
           </div>
 
-          <div className={styles.handoff} aria-hidden="true"><span /></div>
+          <FixtureTrace />
 
           <section id="matchup" aria-labelledby="matchup-heading" className={styles.matchup}>
             <div className={styles.matchupHeader}>

@@ -1,5 +1,4 @@
 .opening {
-  --pitch-progress: 0;
   --pitch-ink: #b8f76d;
   --rule: #3a483e;
   --paper: #f4f5e8;
@@ -75,31 +74,6 @@
 .jump:hover { color: var(--paper); }
 .jump:focus-visible { outline: 2px solid var(--pitch-ink); outline-offset: .3rem; }
 
-.handoff {
-  position: relative;
-  height: clamp(2.25rem, 4vw, 3.75rem);
-  margin-inline: 0 29%;
-  pointer-events: none;
-}
-
-.handoff::before,
-.handoff > span {
-  position: absolute;
-  inset: 0;
-  content: "";
-}
-
-.handoff::before {
-  border-right: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-}
-
-.handoff > span {
-  border-bottom: 1px solid var(--pitch-ink);
-  transform: scaleX(var(--pitch-progress));
-  transform-origin: right;
-}
-
 .matchup {
   padding-top: 1.35rem;
   scroll-margin-top: 1.25rem;
@@ -138,7 +112,6 @@
   .shell { width: min(100% - 2rem, 35rem); }
   .hero, .matchupHeader { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .title { font-size: clamp(2.55rem, 10vw, 4.25rem); }
-  .handoff { margin-inline-end: 32%; }
   .matchupHeader { margin-bottom: 1.2rem; }
 }
 

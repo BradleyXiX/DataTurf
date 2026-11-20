@@ -38,8 +38,7 @@ export default function StadiumModel({
 
   useEffect(() => {
     const mount = host.current;
-    const opening = mount?.closest<HTMLElement>('#explore-opening');
-    if (!mount || !opening) return;
+    if (!mount) return;
 
     const controller = new AbortController();
     const scene = new THREE.Scene();
@@ -64,7 +63,6 @@ export default function StadiumModel({
       if (controller.signal.aborted) return;
       controller.abort();
       delete mount.dataset.ready;
-      opening.style.removeProperty('--pitch-progress');
       onFailure();
     };
 
@@ -108,7 +106,6 @@ export default function StadiumModel({
       }
 
       renderedProgress = progress;
-      opening.style.setProperty('--pitch-progress', progress.toFixed(3));
       mount.dataset.ready = 'true';
     };
 
@@ -182,7 +179,6 @@ export default function StadiumModel({
         renderer.forceContextLoss();
         renderer.domElement.remove();
       }
-      opening.style.removeProperty('--pitch-progress');
       delete mount.dataset.ready;
     };
   }, [onFailure]);
