@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { EplTeam } from '@/lib/epl/types';
+import type { EplTeam } from '@/lib/epl/types';
+import type { VenueFilter } from '@/lib/epl/metrics';
 import { ArrowRight } from 'lucide-react';
 
 interface CompareLauncherProps {
@@ -10,8 +11,9 @@ interface CompareLauncherProps {
   isDemo?: boolean;
   initialLeftId?: string;
   initialRightId?: string;
-  initialVenue?: 'all' | 'home' | 'away';
+  initialVenue?: VenueFilter;
   compact?: boolean;
+  followAppliedFilters?: boolean;
 }
 
 export function CompareLauncher({
@@ -21,16 +23,30 @@ export function CompareLauncher({
   initialRightId = '',
   initialVenue = 'all',
   compact = false,
+  followAppliedFilters = false,
 }: CompareLauncherProps) {
   const router = useRouter();
-  const [leftId, setLeftId] = useState(initialLeftId || (teams[0]?.id ?? ''));
-  const [rightId, setRightId] = useState(
-    initialRightId || (teams[1]?.id ?? teams[0]?.id ?? '')
-  );
-  const [venue, setVenue] = useState<'all' | 'home' | 'away'>(initialVenue);
+  const appliedLeft = followAppliedFilters && !teams.some((team) => team.id === initialLeftId)
+    ? '' : initialLeftId || (teams[0]?.id ?? '');
+  const appliedRight = followAppliedFilters && !teams.some((team) => team.id === initialRightId)
+    ? '' : initialRightId || (teams[1]?.id ?? teams[0]?.id ?? '');
+  const [leftId, setLeftId] = useState(appliedLeft);
+  const [rightId, setRightId] = useState(appliedRight);
+  const [venue, setVenue] = useState<VenueFilter>(initialVenue);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [applied, setApplied] = useState({ left: appliedLeft, right: appliedRight, venue: initialVenue });
 
-  const navigateToComparison = (left: string, right: string, v: 'all' | 'home' | 'away') => {
+  if (followAppliedFilters && (applied.left !== appliedLeft || applied.right !== appliedRight || applied.venue !== initialVenue)) {
+    setApplied({ left: appliedLeft, right: appliedRight, venue: initialVenue });
+    if (applied.left !== appliedLeft || applied.right !== appliedRight) {
+      setLeftId(appliedLeft);
+      setRightId(appliedRight);
+    }
+    setVenue(initialVenue);
+    setValidationError(null);
+  }
+
+  const navigateToComparison = (left: string, right: string, v: VenueFilter) => {
     if (!left || !right) {
       setValidationError('Select two clubs to compare.');
       return;
@@ -90,6 +106,7 @@ export function CompareLauncher({
               }}
               className="w-full bg-[#13171f] border border-white/[0.12] text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
             >
+              {followAppliedFilters && <option value="" disabled>Select a club</option>}
               {teams.map((t) => (
                 <option key={t.id} value={t.id} disabled={t.id === rightId}>
                   {t.name} {t.id === rightId ? '(Selected as B)' : ''}
@@ -99,7 +116,7 @@ export function CompareLauncher({
           </div>
 
           {/* VS Divider on desktop */}
-          <div className="hidden md:flex items-center justify-center pb-2.5 text-zinc-500 text-xs font-mono">
+          <div className="hidden md:flex items-center justify-center pb-2.5 text-zinc-400 text-xs font-mono">
             vs
           </div>
 
@@ -120,6 +137,7 @@ export function CompareLauncher({
               }}
               className="w-full bg-[#13171f] border border-white/[0.12] text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
             >
+              {followAppliedFilters && <option value="" disabled>Select a club</option>}
               {teams.map((t) => (
                 <option key={t.id} value={t.id} disabled={t.id === leftId}>
                   {t.name} {t.id === leftId ? '(Selected as A)' : ''}
@@ -139,7 +157,7 @@ export function CompareLauncher({
             <select
               id="select-venue"
               value={venue}
-              onChange={(e) => setVenue(e.target.value as any)}
+              onChange={(e) => setVenue(e.target.value as VenueFilter)}
               className="w-full bg-[#13171f] border border-white/[0.12] text-zinc-100 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
             >
               <option value="all">All Matches</option>
@@ -166,8 +184,8 @@ export function CompareLauncher({
 
         {/* Quick Matchup Presets */}
         {!compact && (
-          <div className="mt-3.5 pt-3 border-t border-white/[0.06] flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-zinc-500 font-mono text-[11px]">Quick Matchups:</span>
+          <div data-matchup-presets className="mt-3.5 pt-3 border-t border-white/[0.06] flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-zinc-400 font-mono text-[11px]">Quick Matchups:</span>
             <button
               type="button"
               onClick={() => setMatchup('liverpool', 'arsenal')}

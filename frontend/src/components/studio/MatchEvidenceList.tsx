@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { EplMatch, EplTeam } from '@/lib/epl/types';
+import type { EplMatch, EplTeam } from '@/lib/epl/types';
 
 interface MatchEvidenceListProps {
   matches: EplMatch[];
@@ -22,7 +22,7 @@ export function MatchEvidenceList({
 
   if (matches.length === 0) {
     return (
-      <div className="rounded-lg border border-white/[0.08] bg-[#0d1015] p-6 text-center text-xs font-mono text-zinc-500">
+      <div className="rounded-lg border border-white/[0.08] bg-[#0d1015] p-6 text-center text-xs font-mono text-zinc-400">
         No completed matches found for the selected criteria.
       </div>
     );
@@ -35,7 +35,7 @@ export function MatchEvidenceList({
           <h3 className="text-sm font-semibold text-zinc-100 tracking-tight">{title}</h3>
           {description && <p className="text-xs text-zinc-400 mt-0.5">{description}</p>}
         </div>
-        <span className="text-[11px] font-mono text-zinc-500">
+        <span className="text-[11px] font-mono text-zinc-400">
           {matches.length} {matches.length === 1 ? 'match' : 'matches'}
         </span>
       </div>
@@ -83,11 +83,11 @@ export function MatchEvidenceList({
               className="px-4 py-2.5 flex items-center justify-between gap-3 text-xs hover:bg-white/[0.02] transition-colors"
             >
               {/* Date & Details */}
-              <div className="flex items-center gap-2.5 font-mono text-zinc-500 shrink-0">
+              <div className="flex items-center gap-2.5 font-mono text-zinc-400 shrink-0">
                 {outcome}
                 <span>{dateStr}</span>
-                <span className="hidden sm:inline text-zinc-600">•</span>
-                <span className="hidden sm:inline text-zinc-600">MD {m.matchday}</span>
+                <span className="hidden sm:inline text-zinc-400">•</span>
+                <span className="hidden sm:inline text-zinc-400">MD {m.matchday}</span>
               </div>
 
               {/* Matchup & Score */}
@@ -107,7 +107,7 @@ export function MatchEvidenceList({
                   ) : m.status === 'POSTPONED' ? (
                     <span className="text-amber-400">PPD</span>
                   ) : (
-                    <span className="text-zinc-500">SCH</span>
+                    <span className="text-zinc-400">SCH</span>
                   )}
                 </div>
 

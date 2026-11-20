@@ -1,63 +1,85 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { StadiumPoster } from './StadiumPoster';
+import Image from 'next/image';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import styles from './stadium.module.css';
 
-// Lazy-load the 3D scene only on the client with zero SSR overhead
-const Stadium3D = dynamic(() => import('./Stadium3D'), {
-  ssr: false,
-  loading: () => null,
-});
+const StadiumModel = dynamic(
+  () => import('../visuals/StadiumModel').catch(() => ({ default: () => null })),
+  { ssr: false },
+);
 
-interface StadiumSignatureProps {
-  className?: string;
-  opacity?: number;
-}
-
-/**
- * DataTurf Stadium Signature Moment
- * Refined stadium visual combining an authentic static isometric vector poster
- * with an optional, lazy-loaded progressive 3D enhancement on eligible desktop screens.
- *
- * Guarantees:
- * - Poster is preserved on phones, reduced motion, SSR, and WebGL failures.
- * - Brief, elegant reveal (500ms) with motion-reduce bypass.
- * - Stays strictly off Club and Compare routes.
- * - No scroll takeover or continuous offscreen animation.
- */
-export function StadiumSignature({
-  className = '',
-  opacity = 0.35,
-}: StadiumSignatureProps) {
-  const [revealed, setRevealed] = useState(false);
-  const [canLoad3D, setCanLoad3D] = useState(false);
+export function StadiumSignature() {
+  const stage = useRef<HTMLDivElement>(null);
+  const [eligible, setEligible] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const onFailure = useCallback(() => setFailed(true), []);
 
   useEffect(() => {
-    // Brief reveal trigger on mount
-    setRevealed(true);
+    const element = stage.current;
+    if (!element) return;
 
-    // Only trial 3D if on desktop (width >= 768) and motion is not reduced
-    const isDesktop = window.innerWidth >= 768;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const preference = window.matchMedia('(min-width: 64rem) and (prefers-reduced-motion: no-preference)');
+    let loaded = document.readyState === 'complete';
+    let inView = false;
+    let mounted = false;
+    let delay: number | undefined;
 
-    if (isDesktop && !reducedMotion) {
-      setCanLoad3D(true);
-    }
-  }, []);
+    const check = () => {
+      window.clearTimeout(delay);
+      if (!preference.matches) {
+        mounted = false;
+        setEligible(false);
+        return;
+      }
+      if (!loaded || !inView || mounted) return;
+      delay = window.setTimeout(() => {
+        try {
+          const context = document.createElement('canvas').getContext('webgl2');
+          if (!context) return;
+          context.getExtension('WEBGL_lose_context')?.loseContext();
+          mounted = true;
+          setEligible(true);
+        } catch {
+          onFailure();
+        }
+      }, 120);
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      check();
+    });
+    const onLoad = () => {
+      loaded = true;
+      check();
+    };
+    observer.observe(element);
+    window.addEventListener('load', onLoad, { once: true });
+    preference.addEventListener('change', check);
+
+    return () => {
+      window.clearTimeout(delay);
+      observer.disconnect();
+      window.removeEventListener('load', onLoad);
+      preference.removeEventListener('change', check);
+    };
+  }, [onFailure]);
 
   return (
-    <div
-      className={`relative w-full h-full overflow-hidden pointer-events-none select-none transition-all duration-700 ease-out motion-reduce:transition-none ${
-        revealed ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.98]'
-      } ${className}`}
-      aria-hidden="true"
-    >
-      {/* 1. Rock-solid static SVG poster fallback (Active everywhere) */}
-      <StadiumPoster opacity={opacity} />
-
-      {/* 2. Optional progressive 3D enhancement (Only desktop, not reduced motion) */}
-      {canLoad3D && <Stadium3D />}
+    <div ref={stage} id="explore-stadium" className={styles.stage} aria-hidden="true">
+      <Image
+        className={styles.poster}
+        src="/stadium/stadium-poster.webp"
+        alt=""
+        width={1280}
+        height={720}
+        unoptimized
+        preload
+      />
+      <span className={styles.rightMark} />
+      {eligible && !failed && <StadiumModel className={styles.model} onFailure={onFailure} />}
     </div>
   );
 }
