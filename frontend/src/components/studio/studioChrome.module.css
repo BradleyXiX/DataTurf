@@ -13,8 +13,11 @@
 
 .navShell { gap: clamp(.8rem, 3vw, 2.5rem); min-height: 3.5rem; }
 .brand, .nav a, .demo a { display: inline-flex; align-items: center; min-height: 44px; }
-.brand { gap: .45rem; font-weight: 700; font-size: 1.05rem; }
-.mark { width: 1.5rem; height: 1.5rem; flex: none; }
+.brand { flex: none; max-width: 100%; }
+.wordmark { display: block; width: clamp(8.4rem, 22vw, 13rem); max-width: 100%; height: auto; }
+@media (forced-colors: active) {
+  .wordmark { --brand-accent: LinkText; --brand-cutout: Canvas; }
+}
 .nav { display: flex; gap: .75rem; }
 .nav a { justify-content: center; border-bottom: 1px solid transparent; color: #b8c9bc; font-size: .875rem; }
 .nav a:hover, .nav a[aria-current] { color: #f4f5e8; }
@@ -32,6 +35,8 @@
 
 @media (max-width: 36rem) {
   .navShell, .demoShell { width: calc(100% - 2rem); }
+  .navShell { flex-wrap: wrap; row-gap: 0; }
+  .nav { flex-wrap: wrap; row-gap: 0; }
   .season { display: none; }
   .demo p span { display: block; }
 }

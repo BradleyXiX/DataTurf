@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { PitchArtwork } from './PitchArtwork';
+import { DataTurfWordmark } from './DataTurfWordmark';
 import styles from './studioChrome.module.css';
 
 interface StudioNavProps {
@@ -15,8 +15,7 @@ export function StudioNav({ isDemo = false, seasonLabel, currentRoute = 'explore
     <header className={styles.header}>
       <div className={styles.navShell}>
         <Link href={`/${suffix}`} className={styles.brand} aria-label="DataTurf home">
-          <PitchArtwork variant="mark" className={styles.mark} />
-          <span>DataTurf</span>
+          <DataTurfWordmark className={styles.wordmark} />
         </Link>
         <nav aria-label="Studio navigation" className={styles.nav}>
           <Link href={`/${suffix}`} aria-current={currentRoute === 'explore' ? 'page' : undefined}>Explore</Link>
